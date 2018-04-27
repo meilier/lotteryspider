@@ -33,18 +33,19 @@ class LotteryDatabase:
 		elif(filename == 'B402'):
 			data = lottery_util.get_B402data()
 			sql = self.B402.SQL
-		current_id = int(self.get_max_id())
+		#current_id = int(self.get_max_id())
 		for da in data :
-			current_id = current_id +1
+			#current_id = current_id +1
 			print(da)
-			sqldata = sql+str(tuple(([str(current_id)]+da)))
+			#sqldata = sql+str(tuple(([str(current_id)]+da)))
+			sqldata = sql+str(tuple(da))
 			print(sqldata)
 			self.__cursor.execute(sqldata)
 		self.__conn.commit();
 	
 	def __del__(self):
 		self.__conn.close()
-
+	# used for insert id increase but now when use default sys_guid() its useless
 	def get_max_id(self):
 		rs = self.__cursor.execute(self.JX201GETMAXIDSQL).fetchall()
 		if(rs == []):

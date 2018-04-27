@@ -29,6 +29,16 @@ def get_JX201data():
 	data_and_date = [i+[date] for i in data]
 	return data_and_date
 
+# replace commma (',') in number column with nothing ('')
+def delete_comma(commadata):
+	for i ,item in enumerate(commadata):
+		for j, item2 in enumerate(item):
+			if(j <=3):
+				continue
+			if(re.match('.*,.*',commadata[i][j],flags=0)):
+				commadata[i][j]=commadata[i][j].replace(',','')
+	return commadata
+
 # get title column and data from B402.csv
 def get_B402data():
 	with open(wd+'\\B402.csv') as f:
