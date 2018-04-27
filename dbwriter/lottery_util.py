@@ -19,7 +19,8 @@ def get_JX201data():
 		contents = [i for i in reader]
 	#title = contents[4]
 	date = contents[2][1][:10]
-	data = contents[5:]
+	#15 item for test
+	data = contents[5:20]
 	for i ,item in enumerate(data):
 		for j, item2 in enumerate(item):
 			if(j <=3):
@@ -43,10 +44,16 @@ def delete_comma(commadata):
 def get_B402data():
 	with open(wd+'\\B402.csv') as f:
 		reader = csv.reader(f)
-		contents = [i for i in reader]
+		contents = [i[1:] for i in reader]
 	#title = contents[7]
-	date = contents[4][2][:10]
+	date = contents[4][1][:10]
 	data = contents[-18:-1]
+	for i ,item in enumerate(data):
+		for j, item2 in enumerate(item):
+			if(j ==0 or j==1 or j==4 or j==7 or j== 10):
+				continue
+			if(re.match('.*,.*',data[i][j],flags=0)):
+				data[i][j]=data[i][j].replace(',','')
 	#append date to data we got 
 	data_and_date = [i+[date] for i in data]
 	return data_and_date
@@ -56,6 +63,20 @@ def get_A205data():
 	with open(wd+'\\A205.csv') as f:
 		reader = csv.reader(f);
 		contents = [i for i in reader]
+	date = contents[3][2][:10]
+	tmpdata = contents[7:]
+	data = []
+	for i in tmpdata:
+		if(i[0].isdigit()):
+			data = data+[i]
+	for i ,item in enumerate(data):
+		for j, item2 in enumerate(item):
+			if(j ==0 or j==1 or j==2):
+				continue
+			if(re.match('.*,.*',data[i][j],flags=0)):
+				data[i][j]=data[i][j].replace(',','')
+	data_and_date = [i+[date] for i in data]
+	return data_and_date
 	#waiting for completed
 
 # add data column to data
