@@ -2,7 +2,7 @@
 import csv
 import re
 from abc import ABC, abstractmethod
-from lottery_util import wd
+from lottery_util import wdcsv
 
 
 class Table(ABC):
@@ -31,7 +31,7 @@ class JX201Table(Table):
 
 	# get title column and data from JX201.csv
 	def get_data(self):
-		with open(wd+'\\'+self.filename) as f:
+		with open(wdcsv+self.filename) as f:
 			reader = csv.reader(f)
 			contents = [i for i in reader]
 		#title = contents[4]
@@ -56,7 +56,7 @@ class B402Table(Table):
 		return "INSERT INTO SALES_ALL (CITY_CODE, CITY_NAME, CONFIRM_PACKAGE, CONFIRM_MONEY , CONFIRM_PROPORTION , ACTIVE_PACKAGE, ACTIVE_MONEY , ACTIVE_PROPORTION , DUIJIANG_NUMBER , DUIJIANG_MONEY , DUIJIANG_PROPORTION, MANAGE_DATE) VALUES "
 	
 	def get_data(self):
-		with open(wd+'\\'+self.filename) as f:
+		with open(wdcsv+self.filename) as f:
 			reader = csv.reader(f)
 			contents = [i[1:] for i in reader]
 		#title = contents[7]
@@ -81,7 +81,7 @@ class A205Table(Table):
 		return "INSERT INTO INVENTORY_INFO_ALL (FACE_VALUE, GAME_CODE, GAME_NAME, II_JIANGZU, II_CASE, II_PACKAGE, II_MONEY, INBOUND_JIANGZU, INBOUND_CASE, INBOUND_PACKAGE, INBOUND_MONEY, OUTBOUND_JIANGZU, OUTBOUND_CASE, OUTBOUND_PACKAGE, OUTBOUND_MONEY, EI_JIANGZU, EI_CASE, EI_PACKAGE, EI_MONEY, MANAGE_DATE) VALUES "
 	
 	def get_data(self):
-		with open(wd+'\\'+self.filename) as f:
+		with open(wdcsv+self.filename) as f:
 			reader = csv.reader(f)
 			contents = [i for i in reader]
 		date = contents[3][2][:10]
@@ -108,7 +108,7 @@ class Q102Table(Table):
 		return "INSERT INTO CLAIM_PRIZE_INFO_ALL (PROVINCE_CODE, PROVINCE_NAME, CITY_CODE, CITY_NAME, COUNTRY_CODE, COUNTRY_NAME, ORGANIZATION_TYPE, ORGANIZATION_CODE, ORGANIZATION_NAME, CLAIM_DATE, GAME_CODE, GAME_NAME, TERMINAL_CODE, FACE_VALUE, PACKAGE_NUMBER, TICKET_NUMBER, PRIZE_CLASS, PRIZE_MONEY, STORE_CODE, ACTIVE_TIME, PACKAGE_STATE) VALUES "
 	
 	def get_data(self):
-		with open(wd+'\\'+self.filename) as f:
+		with open(wdcsv+self.filename) as f:
 			reader = csv.reader(f)
 			contents =[i for i in reader]
 		date = contents[2][0][5:15]
