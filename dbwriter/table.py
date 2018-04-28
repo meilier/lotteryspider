@@ -23,7 +23,7 @@ class Table(ABC):
 class JX201Table(Table):
 	@property
 	def filename(self):
-		return 'JX201'
+		return 'JX201.csv'
 
 	@property
 	def insert_sql(self):
@@ -31,7 +31,7 @@ class JX201Table(Table):
 
 	# get title column and data from JX201.csv
 	def get_data(self):
-		with open(wd+'\\JX201.csv') as f:
+		with open(wd+'\\'+self.filename) as f:
 			reader = csv.reader(f)
 			contents = [i for i in reader]
 		#title = contents[4]
@@ -50,13 +50,13 @@ class JX201Table(Table):
 class B402Table(Table):
 	@property
 	def filename(self):
-		return 'B201'
+		return 'B201.csv'
 	@property
 	def insert_sql(self):
 		return "INSERT INTO SALES_ALL (CITY_CODE, CITY_NAME, CONFIRM_PACKAGE, CONFIRM_MONEY , CONFIRM_PROPORTION , ACTIVE_PACKAGE, ACTIVE_MONEY , ACTIVE_PROPORTION , DUIJIANG_NUMBER , DUIJIANG_MONEY , DUIJIANG_PROPORTION, MANAGE_DATE) VALUES "
 	
 	def get_data(self):
-		with open(wd+'\\B402.csv') as f:
+		with open(wd+'\\'+self.filename) as f:
 			reader = csv.reader(f)
 			contents = [i[1:] for i in reader]
 		#title = contents[7]
@@ -75,13 +75,13 @@ class B402Table(Table):
 class A205Table(Table):
 	@property
 	def filename(self):
-		return 'A205'
+		return 'A205.csv'
 	@property
 	def insert_sql(self):
 		return "INSERT INTO INVENTORY_INFO_ALL (FACE_VALUE, GAME_CODE, GAME_NAME, II_JIANGZU, II_CASE, II_PACKAGE, II_MONEY, INBOUND_JIANGZU, INBOUND_CASE, INBOUND_PACKAGE, INBOUND_MONEY, OUTBOUND_JIANGZU, OUTBOUND_CASE, OUTBOUND_PACKAGE, OUTBOUND_MONEY, EI_JIANGZU, EI_CASE, EI_PACKAGE, EI_MONEY, MANAGE_DATE) VALUES "
 	
 	def get_data(self):
-		with open(wd+'\\A205.csv') as f:
+		with open(wd+'\\'+self.filename) as f:
 			reader = csv.reader(f)
 			contents = [i for i in reader]
 		date = contents[3][2][:10]
@@ -102,13 +102,13 @@ class A205Table(Table):
 class Q102Table(Table):
 	@property
 	def filename(self):
-		return 'Q102'
+		return 'Q102.csv'
 	@property
 	def insert_sql(self):
 		return "INSERT INTO CLAIM_PRIZE_INFO_ALL (PROVINCE_CODE, PROVINCE_NAME, CITY_CODE, CITY_NAME, COUNTRY_CODE, COUNTRY_NAME, ORGANIZATION_TYPE, ORGANIZATION_CODE, ORGANIZATION_NAME, CLAIM_DATE, GAME_CODE, GAME_NAME, TERMINAL_CODE, FACE_VALUE, PACKAGE_NUMBER, TICKET_NUMBER, PRIZE_CLASS, PRIZE_MONEY, STORE_CODE, ACTIVE_TIME, PACKAGE_STATE) VALUES "
 	
 	def get_data(self):
-		with open(wd+'\\Q102.csv') as f:
+		with open(wd+'\\'+self.filename) as f:
 			reader = csv.reader(f)
 			contents =[i for i in reader]
 		date = contents[2][0][5:15]
@@ -119,7 +119,7 @@ class Q102Table(Table):
 class AllotDataTable(Table):
 	@property
 	def filename(self):
-		return 'AllotData'
+		return 'AllotData.csv'
 	@property
 	def insert_sql(self):
 		return "INSERT INTO ALLOT_DATA_ALL (ALLOT_NUMBER, OUTBOUND_WAREHOUSE, INBOUND_WAREHOUSE, GAME_CODE, GAME_NAME, GAME_FACE_VALUE, ALLOT_CASE_NUMBER, ALLOT_SCATTERED_PACKAGE, ALLOT_TOTAL_PACKAGE, ALLOT_TOTAL_MONEY, MANAGE_DATE) VALUES "
