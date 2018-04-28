@@ -2,6 +2,7 @@
 import csv
 import re
 from abc import ABC, abstractmethod
+from lottery_util import wd
 
 
 class Table(ABC):
@@ -81,7 +82,7 @@ class A205Table(Table):
 	
 	def get_data(self):
 		with open(wd+'\\A205.csv') as f:
-			reader = csv.reader(f);
+			reader = csv.reader(f)
 			contents = [i for i in reader]
 		date = contents[3][2][:10]
 		tmpdata = contents[7:]
@@ -107,7 +108,13 @@ class Q102Table(Table):
 		return "INSERT INTO CLAIM_PRIZE_INFO_ALL (PROVINCE_CODE, PROVINCE_NAME, CITY_CODE, CITY_NAME, COUNTRY_CODE, COUNTRY_NAME, ORGANIZATION_TYPE, ORGANIZATION_CODE, ORGANIZATION_NAME, CLAIM_DATE, GAME_CODE, GAME_NAME, TERMINAL_CODE, FACE_VALUE, PACKAGE_NUMBER, TICKET_NUMBER, PRIZE_CLASS, PRIZE_MONEY, STORE_CODE, ACTIVE_TIME, PACKAGE_STATE) VALUES "
 	
 	def get_data(self):
-		print('hello')
+		with open(wd+'\\Q102.csv') as f:
+			reader = csv.reader(f)
+			contents =[i for i in reader]
+		date = contents[2][0][5:15]
+		data = contents[4:]
+		data_and_date = [i+[date] for i in data]
+		return data_and_date
 
 class AllotDataTable(Table):
 	@property
@@ -115,7 +122,7 @@ class AllotDataTable(Table):
 		return 'AllotData'
 	@property
 	def insert_sql(self):
-		return "INSERT INTO ALLOT_DATA_ALL (ALLOT_NUMBER, OUTBOUND_WAREHOUSE, INBOUND_WAREHOUSE, GAME_CODE, GAME_NAME, GAME_FACE_VALUE, ALLOT_CASE_NUMBER, ALLOT_SCATTERED_PACKAGE, ALLOT_TOTAL_PACKAGE, ALLOT_TOTAL_MONEY) VALUES "
+		return "INSERT INTO ALLOT_DATA_ALL (ALLOT_NUMBER, OUTBOUND_WAREHOUSE, INBOUND_WAREHOUSE, GAME_CODE, GAME_NAME, GAME_FACE_VALUE, ALLOT_CASE_NUMBER, ALLOT_SCATTERED_PACKAGE, ALLOT_TOTAL_PACKAGE, ALLOT_TOTAL_MONEY, MANAGE_DATE) VALUES "
 	
 	def get_data(self):
 		print('hello')

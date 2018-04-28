@@ -45,6 +45,29 @@ def comprare_total_money():
 	else:
 		return False;
 
+#this function compare total claim prize money between JX201 add Q102 and B402 
+def compare_total_claim_money():
+	with open(wd+'\\JX201.csv') as f:
+		reader = csv.reader(f)
+		contents = [i for i in reader]
+	data = contents[5:]
+	JX201_total_claim_money = sum([row[9] for row in data])
+	with open(wd+'\\Q102.csv') as f:
+		reader = csv.reader(f)
+		contents = [i for i in reader]
+	data = contents[4:]
+	Q102_total_claim_money = sum([row[17] for row in data])
+	with open(wd+'\\B402.csv') as f:
+		reader = csv.reader(f)
+		contents = [i for i in reader]
+	B402_total_confirm_money = contents[-1][10]
+	if(JX201_total_claim_money + Q102_total_claim_money == B402_total_confirm_money):
+		return True;
+	else:
+		return False;
+	
+
+
 #change files name  in directory
 def change_files_name(filedir):
 	if(((platform == 'Windows') and (filedir[-1] != '\\'))):
