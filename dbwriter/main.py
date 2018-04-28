@@ -9,11 +9,11 @@ at = A205Table()
 qt = Q102Table()
 adt = AllotDataTable()
 
-ld.addTable(jxt)
-ld.addTable(bt)
-ld.addTable(at)
-ld.addTable(qt)
-ld.addTable(adt)
+ld.add_table(jxt)
+ld.add_table(bt)
+ld.add_table(at)
+ld.add_table(qt)
+ld.add_table(adt)
 
 #call sipder
 
