@@ -7,13 +7,13 @@ ld = LotteryDatabase()
 jxt = JX201Table()
 #bt = B402Table()
 #at = A205Table()
-#qt = Q102Table()
+qt = Q102Table()
 #adt = AllotDataTable()
 
 ld.add_table(jxt)
 #ld.add_table(bt)
 #ld.add_table(at)
-#ld.add_table(qt)
+ld.add_table(qt)
 #ld.add_table(adt)
 
 #call sipder
