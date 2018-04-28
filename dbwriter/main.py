@@ -1,4 +1,4 @@
-from lottery_databaes import LotteryDatabase
+from lottery_database import LotteryDatabase
 from table import JX201Table, B402Table, A205Table, Q102Table, AllotDataTable
 import lottery_util
 
@@ -10,11 +10,11 @@ jxt = JX201Table()
 #qt = Q102Table()
 #adt = AllotDataTable()
 
-ld.addTable(jxt)
-#ld.addTable(bt)
-#ld.addTable(at)
-#ld.addTable(qt)
-#ld.addTable(adt)
+ld.add_table(jxt)
+#ld.add_table(bt)
+#ld.add_table(at)
+#ld.add_table(qt)
+#ld.add_table(adt)
 
 #call sipder
 
@@ -38,4 +38,4 @@ ld.addTable(jxt)
 #	#call this py in crontab next hour
 #	#delete csv files
 #	lottery_util.delete_csv_files()
-	ld.insert_data()
+ld.insert_data()
