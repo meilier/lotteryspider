@@ -40,13 +40,16 @@ class MyTable(Table):
 ```
 
 #### 2. add new object in main.py
+
+```python3 
 from table.py import MyTable
 
-mt means mytable and ld means lottery_database
+\#mt means mytable and ld means lottery_database
 
 mt = MyTable()
 ld.addTable(mt)
 
+```
 and you just call ld.insert_date and everything is ok
 
 
