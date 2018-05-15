@@ -7,6 +7,7 @@ import time
 from selenium.common.exceptions import NoSuchFrameException
 # from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.alert import Alert
 import os
 
 class StartCrawler(object):
@@ -67,33 +68,89 @@ class StartCrawler(object):
 
 
 		#定位即开业务‘
-		# self.browser.find_element_by_xpath("/frame[@name='topFrame']/html/body/div[@id='top']/div[@class='topgb']/div[@class='navmenu']/ul[@id='nav']/li[@id='31000000']/a").click
-		# jikaiyewu = "/html/frameset[@id='mainFrameset']/frame[@id='topFrame']/html/body/div[@id='top']/div[@class='topbg']/div[@class='navmenu']/ul[@id='nav']/li[@id='31000000']/a"
-		
-
-		# jikaiyewu = "/html/body/div[@id='top']/div[@class='topbg']/div[@class='navmenu']/ul[@id='nav']/li[@id='31000000']/a"
-		# JIKAI = self.browser.find_element_by_xpath(jikaiyewu)
-		# actions.move_to_element(JIKAI)
-		# actions.double_click(JIKAI)
-		# actions.perform()
-		time.sleep(10)
-
-		js = "if('31000000'=='55999999'){window.location.href = '/ump/system/toELPSystem.action'}else{if(top.checkUmpBlock()){clearBack();switchModule('31000000','即开业务', 'ilms', '10');}else{return false;}}"
-
-		self.browser.execute_script(js)
-
-		# self.browser.find_element_by_id("31000000").click()
+		time.sleep(2)
+		js_JiKai = "if('31000000'=='55999999'){window.location.href = '/ump/system/toELPSystem.action'}else{if(top.checkUmpBlock()){clearBack();switchModule('31000000','即开业务', 'ilms', '10');}else{return false;}}"
+		self.browser.execute_script(js_JiKai)
 		time.sleep(1)
+
 		#定位报表管理
-		#self.browser.find_element_by_id("31140000").click
+		js_BaoBiaoGuanLi = "if(top.checkUmpBlock()){clearBack();switchModule('31140000','报表管理', 'ilms', '20');}else{return false;}"
+		# js_BaoBiaoGuanLi ='{clearBack();switchModule('31140000','报表管理', 'ilms', '20')}'
+		self.browser.execute_script(js_BaoBiaoGuanLi)
 		time.sleep(1)
+
+
+
 		#定位ZAFFIL报表WEB展现
+		# js_ZAFIL = "if(top.checkUmpBlock()){clearBack();clickSubMenu('报表管理','',this.innerHTML);}else{return false}"
+		# self.browser.execute_script(js_ZAFIL)
 
 		#self.browser.find_element_by_xpath("/frame#leftFrame/html/body.imgbody/div.menubox/div.lnavbg1/a").click 	
-		
-		time.sleep(10)
-		#定位JX201
 
+		self.browser.switch_to.parent_frame()
+
+		i = 0
+		while True:
+			try:
+				self.browser.switch_to.frame("leftFrame")
+			except NoSuchFrameException:
+				time.sleep(1) 
+				print(str(i))
+				i = i +1
+			else:
+				print("Find this leftFrame")
+				break
+
+		time.sleep(5)
+
+		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']"
+		# self.browser.find_element_by_xpath(Xpath_ZAFFIL).click()
+		self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
+		# self.browser.execute_script( self.browser.find_element_by_xpath(Xpath_ZAFFIL).style  )
+
+		print("Finish ZAFFIL")
+
+		time.sleep(5)
+		#定位JX201
+		Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content8']/li[@sizset='76']/a[@menuId='31140915']"
+		self.browser.find_element_by_xpath(Xpath_JX201).click()
+		print("Finish find JX201")
+		self.browser.switch_to.parent_frame()
+
+
+
+
+		i = 0
+		while True:
+			try:
+				self.browser.switch_to.frame("mainFrame")
+			except NoSuchFrameException:
+				time.sleep(1) 
+				print(str(i))
+				i = i +1
+			else:
+				print("Find this mainFrame")
+				break
+		#查询
+		time.sleep(5)
+		js_Query = "queryRecord()"
+		self.browser.execute_script(js_Query)
+
+		time.sleep(10)
+
+
+		self.browser.switch_to.frame("report")
+		# js_DownLoadJX201 = "javascript:resultOut('csv',resultForm)"
+		# self.browser.execute_script(js_DownLoadJX201)
+		Xpath_JX201_csv = "/html[@class='dj_ie dj_ie7 dj_contentbox']/body[@class='unieap']/form[@name='resultForm']/div[@id='exportBar']/ul/li[@id='csvTag']/img[@id='csv']"
+		self.browser.find_element_by_xpath(Xpath_JX201_csv).click()
+		js_DownLoadJX201 = "javascript:resultOut('csv',resultForm)"
+		self.browser.execute_script(js_DownLoadJX201)
+		time.sleep(2)
+		# Alert(self.browser).accept()
+		os.system("click_save.exe")
+
+		time.sleep(3)
 
 
 		pass
