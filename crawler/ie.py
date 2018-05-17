@@ -5,17 +5,25 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 from selenium.common.exceptions import NoSuchFrameException
+from selenium.common.exceptions import NoSuchElementException
 # from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
 import os
+import csv
 
 class StartCrawler(object):
+
+
+	list1=[]
+	list2=[]
+	allot_data_list=[]
 
 	def __init__(self):
 		pass
 		
 	def TODO(self):
+		print("beacause a img element is including in <a> element , we need to send enter to make it work")
 		print("how can we get exactly time we need to sleep??????we can wait not too long or short")
 		
 		
@@ -275,14 +283,223 @@ class StartCrawler(object):
 		self.browser.switch_to.parent_frame()
 		
 	def get_Q102(self):
-		pass
+		# 1.get in left frame for sales and claiming
+		self.switch_which_frame("leftFrame")
+		
+		time.sleep(3)
+		# maybe name is ok menuTwoWithoutHref .Test when completed.
+		# img_path = "/html/body/div/div[2]/div[2]/div[@class='lnavbg2']/a/img"
+		# img_path.click()
+		#xpath_sales = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140500']"
+		xpath_query = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31141000']"
+		self.browser.find_element_by_xpath(xpath_query).send_keys(Keys.ENTER)
+		print("Finish get statement query")
+		
+		# 2. locating Q102
+		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+		self.browser.find_element_by_xpath(Xpath_Q102).click()
+		print("Finish find Q102")
+		self.browser.switch_to.parent_frame()
+		time.sleep(5)
 
-	def get_DiaoBoDan(self):
-		pass
+		
+		# 3. 查询
+		# switch to mainFrame
+		self.switch_which_frame("mainFrame")
+		time.sleep(3)
+		
+		
+		# click sr
+		self.browser.find_element_by_id('awardType3').click()
+		time.sleep(2)
+		# click query
+		js_Query = "queryRecord()"
+		self.browser.execute_script(js_Query)
+		time.sleep(30)
+		
+		# 4. download Q102 csv file
+		self.switch_which_frame("report")
+		# js_DownLoadJX201 = "javascript:resultOut('csv',resultForm)"
+		# self.browser.execute_script(js_DownLoadJX201)
+		#Xpath_B402_csv = "/html[@class='dj_ie dj_ie7 dj_contentbox']/body[@class='unieap']/form[@name='resultForm']/div[@id='exportBar']/ul/li[@id='csvTag']/img[@id='csv']"
+		#self.browser.find_element_by_xpath(Xpath_B402_csv).click()
+		js_DownLoadB402 = "javascript:resultOut('csv',resultForm)"
+		self.browser.execute_script(js_DownLoadB402)
+		# Alert(self.browser).accept()
+		
+		#5. click save and exit
+		self.autoit_click()
+		#back to main frame
+		self.browser.switch_to.parent_frame()
+		#back to root
+		self.browser.switch_to.parent_frame()
 
+	def get_AllotData(self):
+		#focus on topFrame
+		self.switch_which_frame("topFrame")
+				
+		#locate allot management
+		time.sleep(1)
+		allot_management = "if(top.checkUmpBlock()){clearBack();switchModule('31030000','调拨管理', 'ilms', '20');}else{return false;}"
+		self.browser.execute_script(allot_management)
+		time.sleep(1)
 
-
-
+		# back to root frame
+		self.browser.switch_to.parent_frame()
+		
+		
+		# normal allot
+		# 1.get in left frame for normal allot data
+		self.switch_which_frame("leftFrame")
+		
+		time.sleep(3)
+		xpath_normal = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31030200']"
+		self.browser.find_element_by_xpath(xpath_normal).send_keys(Keys.ENTER)
+		print("Finish get normal allot")
+		
+		# 2. locating allot order query
+		Xpath_allot_data = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content2']/li[@sizset='9']/a[@menuId='31030205']"
+		self.browser.find_element_by_xpath(Xpath_allot_data).click()
+		print("Finish find allot order query")
+		self.browser.switch_to.parent_frame()
+		time.sleep(3)
+		
+		
+		# 第一个页面有如下数据： 调拨单号	发货仓库	收货仓库	创建日期	调拨箱数	调拨散包数	调拨总包数	状态
+		# 点击调拨单号会有：游戏编码	游戏名称游戏面值 调拨金额
+		# 我们的表：ID，调拨单号	发货仓库	收货仓库	游戏编码	游戏名称	游戏面值 	调拨箱数	调拨散包数	调拨总包数 调拨总金额 创建日期
+		# 根据情况重新设计：ID，调拨单号	发货仓库	收货仓库	游戏编码	游戏名称 调拨箱数	调拨散包数	调拨总包数 游戏面值 调拨总金额 创建日期
+		
+		# 获取当前日期：
+		# 列表1：调拨单号	发货仓库	收货仓库
+		# 列表2：调拨箱数	调拨散包数	调拨总包数
+		# 列表3：游戏编码	游戏名称 游戏面值 调拨金额
+		# 根据当前日期，在第一个页面获取调拨单号，进入获取数据。数据拼接格式： 列表1+列表3+列表2+日期
+		
+		# 重新设计
+		# 列表1：调拨单号	发货仓库	收货仓库
+		# 列表2 ：游戏编码	游戏名称 调拨箱数	调拨散包数	调拨总包数 游戏面值 调拨总金额
+		# 数据拼接格式： 列表1+列表2+日期
+		# switch to mainFrame
+		self.switch_which_frame("mainFrame")
+		time.sleep(2)
+		#xpath_allot_number= ""/html/body/div[@class='cm']/div[@id='dataGrid']/div[@class='dojoxGrid-master-view']/div[@id='dojox_GridView_0']/div[@class='dojoxGrid-scrollbox']/div[@class='dojoxGrid-content']""
+		# xpath_allot_number = "/html/body/div[@class='cm']/div[@id='dataGrid']/div[2]/div[2]/div/div/div/"
+		# 采用相对定位，服了，相对定位非常ok
+		#xpath_main_page = "//div[@id='page-0']/div[1]"
+		xpath_allot_number = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[1]/nobr/div"
+		#xpath_outbound_warehouse = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[2]/nobr"
+		#xpath_inbound_warehouse = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[3]/nobr"
+		#xpath_create_date = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[4]/nobr"
+		#xpath_allot_case_number = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[5]/nobr"
+		#xpath_scattered_package = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[6]/nobr"
+		#xpath_total_package = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[7]/nobr"
+		#xpath_allot_state = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[8]/nobr"
+		print(self.browser.find_element_by_xpath(xpath_allot_number).text)
+		xpath_part1="//div[@id='page-0']/div["
+		xpath_part2="]/table[@class='dojoxGrid-row-table']/tbody/tr/td["
+		xpath_part3="]/nobr"
+		xpath_part3div= "]/nobr/div"
+		
+		current_date=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+		#查找page-0 中10项，等于当前日期的项
+		i = 1
+		#list save allot date items which date equals current date  ,such as list=[1,2]
+		list=[]
+		time.sleep(2)
+		while i <=10:
+			xpath_create_date = "//div[@id='page-0']/div["+str(i)+"]/table[@class='dojoxGrid-row-table']/tbody/tr/td[4]/nobr"
+			create_date = self.browser.find_element_by_xpath(xpath_create_date).text
+			print(create_date)
+			if(current_date == create_date):
+				list = list + [i]
+				i=i+1
+			else:
+				break
+		
+		time.sleep(2)
+		#join list1 
+		for i in list:
+			text = self.browser.find_element_by_xpath(xpath_part1+str(i)+xpath_part2+'1'+xpath_part3div).text
+			self.list1 = self.list1+[[text]]
+		for i in list:
+			for j in range(2,4):
+				text=self.browser.find_element_by_xpath(xpath_part1+str(i)+xpath_part2+str(j)+xpath_part3).text
+				self.list1[i-1]=self.list1[i-1]+[text]
+				
+		print(self.list1)
+		
+		########### join list2
+		#for i in list:
+		#	for j in range(5,8):
+		#		text=self.browser.find_element_by_xpath(xpath_part1+i+xpath_part2+j+xpath_part3).text
+		#		list[i-1]=list[i-1]+[text]
+		for i in list:
+			time.sleep(3)
+			self.get_order(i-1)
+			# click backbtn
+			self.browser.find_element_by_id('backBtn').click()
+			
+		# back to root frame
+		print(self.allot_data_list)
+		self.browser.switch_to.parent_frame()
+		with open('./csv/allotdata.csv','w') as f:
+			f_csv = csv.writer(f)
+			f_csv.writerows(self.allot_data_list)
+		
+		
+	def get_order(self,order_num):
+		# execute js,move to first order info
+		time.sleep(1)
+		allot_code = "viewARecord("+str(order_num)+",\"ama_ALLOCATE_CODE\")"
+		self.browser.execute_script(allot_code)
+		time.sleep(1)
+		self.list2=[]
+		#join list2
+		xpath_info_part1="//div[@id='page-0']/div["
+		xpath_info_part2="]/table[@class='dojoxGrid-row-table']/tbody/tr/td["
+		xpath_info_part3= "]"
+		xpath_info_part3div= "]/div"
+		
+		
+		# get total game num
+		time.sleep(2)
+		i=1
+		game_count = 0
+		while True:
+			try:
+				xpath_game_code=xpath_info_part1+str(i)+xpath_info_part2+'1'+xpath_info_part3div
+				print(self.browser.find_element_by_xpath(xpath_game_code).text)
+				game_count = game_count+1
+				i=i+1
+			except NoSuchElementException:
+				break
+		
+		print(game_count)
+		# add game code
+		i = 1
+		while i <= game_count:
+			xpath_game_code=xpath_info_part1+str(i)+xpath_info_part2+'1'+xpath_info_part3div
+			self.list2=self.list2+[[self.browser.find_element_by_xpath(xpath_game_code).text]]
+			i=i+1
+		
+		print(self.list2)
+		# add game info
+		i=1
+		while i<=game_count:
+			for j in range(2,8):
+				xpath_game=xpath_info_part1+str(i)+xpath_info_part2+str(j)+xpath_info_part3
+				text=self.browser.find_element_by_xpath(xpath_info_part1+str(i)+xpath_info_part2+str(j)+xpath_info_part3).text
+				self.list2[i-1]+=[text]
+			i=i+1
+		
+		print(self.list2)
+		# get first order list,put list info into list2
+		current_date=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+		i=1
+		while i<=game_count:
+			self.allot_data_list+=[self.list1[order_num]+self.list2[i-1]+[current_date]]
+			i=i+1
 
 
 if __name__ =="__main__":
@@ -292,6 +509,8 @@ if __name__ =="__main__":
 	Crawler.instant_business()
 	#Crawler.get_JX201()
 	#Crawler.get_B402()
-	Crawler.get_A205()
+	#Crawler.get_A205()
+	#Crawler.get_Q102()
+	Crawler.get_AllotData()
 
 
