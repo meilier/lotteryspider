@@ -50,7 +50,7 @@ class JX201Table(Table):
 class B402Table(Table):
 	@property
 	def filename(self):
-		return 'B201.csv'
+		return 'B402.csv'
 	@property
 	def insert_sql(self):
 		return "INSERT INTO SALES_ALL (CITY_CODE, CITY_NAME, CONFIRM_PACKAGE, CONFIRM_MONEY , CONFIRM_PROPORTION , ACTIVE_PACKAGE, ACTIVE_MONEY , ACTIVE_PROPORTION , DUIJIANG_NUMBER , DUIJIANG_MONEY , DUIJIANG_PROPORTION, MANAGE_DATE) VALUES "
@@ -61,7 +61,7 @@ class B402Table(Table):
 			contents = [i[1:] for i in reader]
 		#title = contents[7]
 		date = contents[4][1][:10]
-		data = contents[-18:-1]
+		data = contents[-18:-2]
 		for i ,item in enumerate(data):
 			for j, item2 in enumerate(item):
 				if(j ==0 or j==1 or j==4 or j==7 or j== 10):
@@ -112,7 +112,7 @@ class Q102Table(Table):
 			reader = csv.reader(f)
 			contents =[i for i in reader]
 		date = contents[2][0][5:15]
-		data = contents[4:]
+		data = contents[4:20]
 		data_and_date = [i+[date] for i in data]
 		return data_and_date
 
@@ -122,7 +122,7 @@ class AllotDataTable(Table):
 		return 'AllotData.csv'
 	@property
 	def insert_sql(self):
-		return "INSERT INTO ALLOT_DATA_ALL (ALLOT_NUMBER, OUTBOUND_WAREHOUSE, INBOUND_WAREHOUSE, GAME_CODE, GAME_NAME, GAME_FACE_VALUE, ALLOT_CASE_NUMBER, ALLOT_SCATTERED_PACKAGE, ALLOT_TOTAL_PACKAGE, ALLOT_TOTAL_MONEY, MANAGE_DATE) VALUES "
+		return "INSERT INTO ALLOT_DATA (ALLOT_NUMBER, OUTBOUND_WAREHOUSE, INBOUND_WAREHOUSE, GAME_CODE, GAME_NAME, GAME_FACE_VALUE, ALLOT_CASE_NUMBER, ALLOT_SCATTERED_PACKAGE, ALLOT_TOTAL_PACKAGE, ALLOT_TOTAL_MONEY, MANAGE_DATE) VALUES "
 	
 	def get_data(self):
 		print('hello')

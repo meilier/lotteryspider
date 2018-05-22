@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 from selenium.common.exceptions import NoSuchFrameException
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import JavascriptException
 # from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
@@ -15,8 +16,13 @@ import csv
 class StartCrawler(object):
 
 
+	#爬取时间
+	#begin_date = '' 
+	# 列表1：调拨单号	发货仓库	收货仓库
+	# 列表2 ：游戏编码	游戏名称 调拨箱数	调拨散包数	调拨总包数 游戏面值 调拨总金额
 	list1=[]
 	list2=[]
+	# 最终的地市调拨数据拼接列表
 	allot_data_list=[]
 
 	def __init__(self):
@@ -28,6 +34,9 @@ class StartCrawler(object):
 		
 		
 	def start_drive(self):
+		"""
+		自动登录模块
+		"""
 		#打开浏览器
 		self.browser = webdriver.Ie()
 		self.browser.get('https://3.13.1.10/loginnew.html')
@@ -35,19 +44,16 @@ class StartCrawler(object):
 		#输入PIN码
 		pin_code= self.browser.find_element_by_name("pinCode")
 		pin_code.clear()
-		pin_code.send_keys("11111111")
-
+		pin_code.send_keys("11111111")  # 默认PIN码
 		#点击登录按钮
 		login_button = self.browser.find_element_by_xpath("/html/body/form/div/table/tbody/tr[2]/td/table[2]/tbody/tr/td/input[1]").click()
-
-		#Xpath
-		# jikaiyewu= /html/frameset[1]/frame/html/body/div/div/div[4]/ul/li[18]/a
-		# jikaiyewu = /html/frameset[@id='mainFrameset']/frame[@id='topFrame']/html/body/div[@id='top']/div/div[4]/ul[@id='nav']/li[@id='31000000']/a
-
 		time.sleep(10)
 		
-		
+	
 	def switch_which_frame(self, frame_name):
+		"""
+		切换Frame
+		"""
 		i = 0
 		while True:
 			try:
@@ -59,8 +65,41 @@ class StartCrawler(object):
 			else:
 				print("Find this "+frame_name)
 				break
+	
+
+	def download_csv(self):
+		i = 0
+		while True:
+			try:
+				js_DownLoad = "javascript:resultOut('csv',resultForm)"
+				self.browser.execute_script(js_DownLoad)
+			except JavascriptException:
+				time.sleep(2) 
+				print(str(i))
+				i = i +1
+			else:
+				print("click download csv successfully")
+				break
+	# def find_which_element(self, element_name):
+	# 	"""
+	# 	切换Frame
+	# 	"""
+	# 	i = 0
+	# 	while True:
+	# 		try:
+	# 			self.browser.switch_to.frame(frame_name)
+	# 		except NoSuchFrameException:
+	# 			time.sleep(1) 
+	# 			print(str(i))
+	# 			i = i +1
+	# 		else:
+	# 			print("Find this "+frame_name)
+	# 			break
 		
 	def instant_business(self):
+		"""
+		点击即开业务
+		"""
 		#得到网页
 		# self.browser.get("https://3.13.1.20:/ump/index.html")
 		i = 0
@@ -78,49 +117,97 @@ class StartCrawler(object):
 		print("All page have print")
 		print(self.browser.current_url)
 
-
 		#focus on topFrame
 		self.switch_which_frame("topFrame")
-
 
 		#定位即开业务‘
 		time.sleep(1)
 		js_JiKai = "if('31000000'=='55999999'){window.location.href = '/ump/system/toELPSystem.action'}else{if(top.checkUmpBlock()){clearBack();switchModule('31000000','即开业务', 'ilms', '10');}else{return false;}}"
 		self.browser.execute_script(js_JiKai)
-		time.sleep(1)
-		self.statement_management()
 		# back to root frame
 		self.browser.switch_to.parent_frame()
 	
 	# call autoit automatically click save button
 	def autoit_click(self):
+		"""
+		自动点击下载
+		"""
 		os.system("click_save.exe")
 	
 	def statement_management(self):
+		"""
+		点击报表管理
+		"""
 		#定位报表管理
+		time.sleep(2)
 		js_BaoBiaoGuanLi = "if(top.checkUmpBlock()){clearBack();switchModule('31140000','报表管理', 'ilms', '20');}else{return false;}"
-		# js_BaoBiaoGuanLi ='{clearBack();switchModule('31140000','报表管理', 'ilms', '20')}'
 		self.browser.execute_script(js_BaoBiaoGuanLi)
-		time.sleep(1)
+		time.sleep(2)
 
+
+	def get_begin_data(self):
+		"""
+		得到当前的有效数据时间
+		"""
+		#1. 定位报表管理
+		#focus on topFrame
+		self.switch_which_frame("topFrame")
+		time.sleep(1)
+		self.statement_management() #点击报表管理
+		# back to root frame
+		self.browser.switch_to.parent_frame()
+		#2. 定位ZAFFIL报表WEB展现
+		self.switch_which_frame("leftFrame")
+		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']"
+
+		i = 0
+		while True:
+			try:
+				self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
+			except NoSuchElementException:
+				time.sleep(1) 
+				print(str(i))
+				i = i +1
+			else:
+				print("Find this element ")
+				break
+		# self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
+		print("Finish ZAFFIL")
+
+		time.sleep(2)
+		#3. 定位JX201
+		Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content8']/li[@sizset='76']/a[@menuId='31140915']"
+		self.browser.find_element_by_xpath(Xpath_JX201).click()
+		print("Finish find JX201")
+		self.browser.switch_to.parent_frame()
+
+		# switch to mainFrame
+		self.switch_which_frame("mainFrame")
+		#4. 得到时间
+		time.sleep(2)
+		elem = self.browser.find_element_by_id("BEGIN_DATE")
+		begine_data = elem.get_attribute("value")
+		#click statement management again
+		self.browser.switch_to.parent_frame()
+		#focus on topFrame
+		self.switch_which_frame("topFrame")
+		time.sleep(1)
+		self.statement_management() #点击报表管理
+		time.sleep(2)
+		self.browser.switch_to.parent_frame()
+		return begine_data
 
 	def get_JX201(self):
+		"""
+		下载JX_201报表到共享文件夹/csv 文件目录中
+		"""
 	
 		#1. 定位ZAFFIL报表WEB展现
-		# js_ZAFIL = "if(top.checkUmpBlock()){clearBack();clickSubMenu('报表管理','',this.innerHTML);}else{return false}"
-		# self.browser.execute_script(js_ZAFIL)
-
-		#self.browser.find_element_by_xpath("/frame#leftFrame/html/body.imgbody/div.menubox/div.lnavbg1/a").click 	
-
-
-
+		time.sleep(1)
 		self.switch_which_frame("leftFrame")
-
+		time.sleep(1)
 		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']"
-		# self.browser.find_element_by_xpath(Xpath_ZAFFIL).click()
 		self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
-		# self.browser.execute_script( self.browser.find_element_by_xpath(Xpath_ZAFFIL).style  )
-
 		print("Finish ZAFFIL")
 
 		time.sleep(2)
@@ -130,29 +217,23 @@ class StartCrawler(object):
 		print("Finish find JX201")
 		self.browser.switch_to.parent_frame()
 
-
 		# switch to mainFrame
 		self.switch_which_frame("mainFrame")
-		# 3. 查询
+		# 3. 获取全局 爬取时间，然后查询
+		# time.sleep(2)
+		# elem = self.browser.find_element_by_id("BEGIN_DATE")
+		# self.begin_date = elem.get_attribute("value")
 		time.sleep(2)
 		js_Query = "queryRecord()"
 		self.browser.execute_script(js_Query)
-
 		time.sleep(2)
 
-		# 4. download jx201 csv file
+		# 4. 下载文件 jx201 csv file
 		self.switch_which_frame("report")
-		# js_DownLoadJX201 = "javascript:resultOut('csv',resultForm)"
-		# self.browser.execute_script(js_DownLoadJX201)
-		#Xpath_JX201_csv = "/html[@class='dj_ie dj_ie7 dj_contentbox']/body[@class='unieap']/form[@name='resultForm']/div[@id='exportBar']/ul/li[@id='csvTag']/img[@id='csv']"
-		#self.browser.find_element_by_xpath(Xpath_JX201_csv).click()
 		
-		#download B402 csv file
-		js_DownLoadJX201 = "javascript:resultOut('csv',resultForm)"
-		self.browser.execute_script(js_DownLoadJX201)
-		# Alert(self.browser).accept()
+		self.download_csv()
 		
-		#5. click save and exit
+		#5. 点击下载保存 click save and exit
 		self.autoit_click()
 		#back to main frame
 		self.browser.switch_to.parent_frame()
@@ -162,8 +243,10 @@ class StartCrawler(object):
 		pass
 
 	def get_B402(self):
-
-		# 1.get in left frame for sales and claiming
+		"""
+		下载B_402报表到共享文件夹/csv 文件目录中
+		"""
+		# 1. 点击销售兑奖 get in left frame for sales and claiming
 		self.switch_which_frame("leftFrame")
 		
 		time.sleep(5)
@@ -171,7 +254,7 @@ class StartCrawler(object):
 		self.browser.find_element_by_xpath(xpath_sales).send_keys(Keys.ENTER)
 		print("Finish get sales and claiming")
 		
-		# 2. locating B402
+		# 2. 定位B402报表locating B402
 		Xpath_B402 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content4']/li[@sizset='45']/a[@menuId='31140505']"
 		self.browser.find_element_by_xpath(Xpath_B402).click()
 		print("Finish find B402")
@@ -187,17 +270,13 @@ class StartCrawler(object):
 		self.browser.execute_script(js_Query)
 		time.sleep(5)
 		
-		# 4. download B402 csv file
+		# 4. 下载文件download B402 csv file
 		self.switch_which_frame("report")
-		# js_DownLoadJX201 = "javascript:resultOut('csv',resultForm)"
-		# self.browser.execute_script(js_DownLoadJX201)
-		#Xpath_B402_csv = "/html[@class='dj_ie dj_ie7 dj_contentbox']/body[@class='unieap']/form[@name='resultForm']/div[@id='exportBar']/ul/li[@id='csvTag']/img[@id='csv']"
-		#self.browser.find_element_by_xpath(Xpath_B402_csv).click()
-		js_DownLoadB402 = "javascript:resultOut('csv',resultForm)"
-		self.browser.execute_script(js_DownLoadB402)
-		# Alert(self.browser).accept()
+
+		self.download_csv()
+
 		
-		#5. click save and exit
+		#5. 点击下载保存click save and exit
 		self.autoit_click()
 		#back to main frame
 		self.browser.switch_to.parent_frame()
@@ -206,7 +285,10 @@ class StartCrawler(object):
 		
 
 	def get_A205(self):
-		# 1.get in left frame for inventory
+		"""
+		下载A_205报表到共享文件夹/csv 文件目录中
+		"""
+		# 1. 点击库存 get in left frame for inventory
 		self.switch_which_frame("leftFrame")
 		
 		time.sleep(5)
@@ -214,7 +296,7 @@ class StartCrawler(object):
 		self.browser.find_element_by_xpath(xpath_sales).send_keys(Keys.ENTER)
 		print("Finish get inventory")
 		
-		# 2. locating A205
+		# 2. 定位A205 报表 locating A205
 		Xpath_A205 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content2']/li[@sizset='10']/a[@menuId='31140305']"
 		self.browser.find_element_by_xpath(Xpath_A205).click()
 		print("Finish find A205")
@@ -228,12 +310,10 @@ class StartCrawler(object):
 		time.sleep(3)
 		
 		
-		#Xpath_A205_lookup = "/html[@class='dj_ie dj_ie7 dj_iequirks']/body[@class='unieap']/div[@class='cmhead']/div[@id='queryPanel']/form[@id='queryForm']/table[@id='queryFormContent]/tbody/tr/td/table/tbody/tr/td/div[@class='lookuptextbox lookuptextboxReadOnly']/div[@class='u-lookupIcon']"
 		Xpath_A205_lookup = "/html/body/div[3]/div/form/table/tbody/tr/td[4]/table/tbody/tr/td[2]/div/div[@class='u-lookupIcon']"
 		self.browser.find_element_by_xpath(Xpath_A205_lookup).click()
 		
-		# move to iframe
-		# xpath_A205_iframe = "/html[@class='dj_ie dj_ie7 dj_iequirks']/body[@class='unieap mainbody']/div[@class='x-dlg-proxy']/div[@class='x-dlg']/table[@id='unieap_innerTable_0']/tbody/tr/td/table/tbody/tr/td/div[@class='dialogBody']/iframe"
+		# 因为iframe没有 name 或者 id，找到iframe切换进入move to iframe
 		xpath_A205_iframe = "/html/body/div[@class='x-dlg-proxy']/div[@class='x-dlg']/table/tbody/tr[2]/td/table/tbody/tr/td[2]/div/iframe"
 		iframe = self.browser.find_element_by_xpath(xpath_A205_iframe)
 		i = 0
@@ -248,18 +328,17 @@ class StartCrawler(object):
 				print("Find this iframe")
 				break
 
-		# small button
-		#xpath_A205_small = "/html[@class='dj_ie dj_ie7 dj_iequirks']/body[@class='unieap mainbody']/div[@id='dataGrid']/div[@class='dojoxGrid-master-view']/div[@id='unieap_widget_grid_RowView_0']/div[@class='dojoxGrid-scrollbox']/div[@class='dojoxGrid-content']/div[@id='page-0']/div[@class='dojoxGrid-rowbar dojoxGrid-rowbar-over']/table[@class='u-grid-rowbar-table']/tbody/tr/td/input"
+		# 点击查找仓库 small button
+		time.sleep(2)
 		name_A205_small = "singledataGrid"
 		self.browser.find_element_by_name(name_A205_small).click()
 		
 		# back to mainFrame , move to confirm frame
-		#self.browser.switch_to.parent_frame()
 		time.sleep(2)
 		self.browser.find_element_by_id('confirmBtn_label').click()
 		print("click confirm key")
 		
-		# back to mainFrame is already closed? I can not know where i am ,so i switch to deauflt
+		# 再次从最基础切换到mainframe中back to mainFrame is already closed? I can not know where i am ,so i switch to deauflt
 		self.browser.switch_to.default_content()
 		self.switch_which_frame("mainFrame")
 		#self.browser.switch_to.parent_frame()
@@ -267,15 +346,14 @@ class StartCrawler(object):
 		time.sleep(3)
 		js_Query = "queryRecord()"
 		self.browser.execute_script(js_Query)
-		time.sleep(45)
+		time.sleep(2)
 		
-		# 4. download A205 csv file
+		# 4. 下载A205报表 download A205 csv file
 		self.switch_which_frame("report")
-		js_DownLoadA205 = "javascript:resultOut('csv',resultForm)"
-		self.browser.execute_script(js_DownLoadA205)
+		self.download_csv()
 		# Alert(self.browser).accept()
 		
-		#5. click save and exit
+		#5. 点击保存 click save and exit
 		self.autoit_click()
 		#back to main frame
 		self.browser.switch_to.parent_frame()
@@ -283,19 +361,18 @@ class StartCrawler(object):
 		self.browser.switch_to.parent_frame()
 		
 	def get_Q102(self):
-		# 1.get in left frame for sales and claiming
+		"""
+		下载Q_102报表到共享文件夹/csv 文件目录中
+		"""
+		# 1.点击查询报表 get in left frame for quering yreport 
 		self.switch_which_frame("leftFrame")
 		
 		time.sleep(3)
-		# maybe name is ok menuTwoWithoutHref .Test when completed.
-		# img_path = "/html/body/div/div[2]/div[2]/div[@class='lnavbg2']/a/img"
-		# img_path.click()
-		#xpath_sales = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140500']"
 		xpath_query = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31141000']"
 		self.browser.find_element_by_xpath(xpath_query).send_keys(Keys.ENTER)
 		print("Finish get statement query")
 		
-		# 2. locating Q102
+		# 2. 点击Q102报表  locating Q102
 		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
 		self.browser.find_element_by_xpath(Xpath_Q102).click()
 		print("Finish find Q102")
@@ -308,24 +385,17 @@ class StartCrawler(object):
 		self.switch_which_frame("mainFrame")
 		time.sleep(3)
 		
-		
 		# click sr
 		self.browser.find_element_by_id('awardType3').click()
 		time.sleep(2)
 		# click query
 		js_Query = "queryRecord()"
 		self.browser.execute_script(js_Query)
-		time.sleep(30)
+		time.sleep(3)
 		
-		# 4. download Q102 csv file
+		# 4. 下载Q102 报表 download Q102 csv file
 		self.switch_which_frame("report")
-		# js_DownLoadJX201 = "javascript:resultOut('csv',resultForm)"
-		# self.browser.execute_script(js_DownLoadJX201)
-		#Xpath_B402_csv = "/html[@class='dj_ie dj_ie7 dj_contentbox']/body[@class='unieap']/form[@name='resultForm']/div[@id='exportBar']/ul/li[@id='csvTag']/img[@id='csv']"
-		#self.browser.find_element_by_xpath(Xpath_B402_csv).click()
-		js_DownLoadB402 = "javascript:resultOut('csv',resultForm)"
-		self.browser.execute_script(js_DownLoadB402)
-		# Alert(self.browser).accept()
+		self.download_csv()
 		
 		#5. click save and exit
 		self.autoit_click()
@@ -335,10 +405,13 @@ class StartCrawler(object):
 		self.browser.switch_to.parent_frame()
 
 	def get_AllotData(self):
+		"""
+		拼接地市调拨数据
+		"""
 		#focus on topFrame
 		self.switch_which_frame("topFrame")
 				
-		#locate allot management
+		#点击调拨管理 locate allot management
 		time.sleep(1)
 		allot_management = "if(top.checkUmpBlock()){clearBack();switchModule('31030000','调拨管理', 'ilms', '20');}else{return false;}"
 		self.browser.execute_script(allot_management)
@@ -349,7 +422,7 @@ class StartCrawler(object):
 		
 		
 		# normal allot
-		# 1.get in left frame for normal allot data
+		# 1. 点击普通调拨get in left frame for normal allot data
 		self.switch_which_frame("leftFrame")
 		
 		time.sleep(3)
@@ -357,7 +430,7 @@ class StartCrawler(object):
 		self.browser.find_element_by_xpath(xpath_normal).send_keys(Keys.ENTER)
 		print("Finish get normal allot")
 		
-		# 2. locating allot order query
+		# 2. 点击调拨单查询 locating allot order query
 		Xpath_allot_data = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content2']/li[@sizset='9']/a[@menuId='31030205']"
 		self.browser.find_element_by_xpath(Xpath_allot_data).click()
 		print("Finish find allot order query")
@@ -365,17 +438,10 @@ class StartCrawler(object):
 		time.sleep(3)
 		
 		
-		# 第一个页面有如下数据： 调拨单号	发货仓库	收货仓库	创建日期	调拨箱数	调拨散包数	调拨总包数	状态
-		# 点击调拨单号会有：游戏编码	游戏名称游戏面值 调拨金额
-		# 我们的表：ID，调拨单号	发货仓库	收货仓库	游戏编码	游戏名称	游戏面值 	调拨箱数	调拨散包数	调拨总包数 调拨总金额 创建日期
+
 		# 根据情况重新设计：ID，调拨单号	发货仓库	收货仓库	游戏编码	游戏名称 调拨箱数	调拨散包数	调拨总包数 游戏面值 调拨总金额 创建日期
 		
-		# 获取当前日期：
-		# 列表1：调拨单号	发货仓库	收货仓库
-		# 列表2：调拨箱数	调拨散包数	调拨总包数
-		# 列表3：游戏编码	游戏名称 游戏面值 调拨金额
-		# 根据当前日期，在第一个页面获取调拨单号，进入获取数据。数据拼接格式： 列表1+列表3+列表2+日期
-		
+		# 获取当前日期
 		# 重新设计
 		# 列表1：调拨单号	发货仓库	收货仓库
 		# 列表2 ：游戏编码	游戏名称 调拨箱数	调拨散包数	调拨总包数 游戏面值 调拨总金额
@@ -383,19 +449,12 @@ class StartCrawler(object):
 		# switch to mainFrame
 		self.switch_which_frame("mainFrame")
 		time.sleep(2)
-		#xpath_allot_number= ""/html/body/div[@class='cm']/div[@id='dataGrid']/div[@class='dojoxGrid-master-view']/div[@id='dojox_GridView_0']/div[@class='dojoxGrid-scrollbox']/div[@class='dojoxGrid-content']""
-		# xpath_allot_number = "/html/body/div[@class='cm']/div[@id='dataGrid']/div[2]/div[2]/div/div/div/"
-		# 采用相对定位，服了，相对定位非常ok
-		#xpath_main_page = "//div[@id='page-0']/div[1]"
+		
+		# 采用相对定位
 		xpath_allot_number = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[1]/nobr/div"
-		#xpath_outbound_warehouse = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[2]/nobr"
-		#xpath_inbound_warehouse = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[3]/nobr"
-		#xpath_create_date = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[4]/nobr"
-		#xpath_allot_case_number = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[5]/nobr"
-		#xpath_scattered_package = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[6]/nobr"
-		#xpath_total_package = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[7]/nobr"
-		#xpath_allot_state = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[8]/nobr"
 		print(self.browser.find_element_by_xpath(xpath_allot_number).text)
+
+		# 拼接元素查找路径
 		xpath_part1="//div[@id='page-0']/div["
 		xpath_part2="]/table[@class='dojoxGrid-row-table']/tbody/tr/td["
 		xpath_part3="]/nobr"
@@ -404,7 +463,7 @@ class StartCrawler(object):
 		current_date=time.strftime('%Y-%m-%d',time.localtime(time.time()))
 		#查找page-0 中10项，等于当前日期的项
 		i = 1
-		#list save allot date items which date equals current date  ,such as list=[1,2]
+		#保存当前日志调拨单的数量 list save allot date items which date equals current date  ,such as list=[1,2]
 		list=[]
 		time.sleep(2)
 		while i <=10:
@@ -418,7 +477,8 @@ class StartCrawler(object):
 				break
 		
 		time.sleep(2)
-		#join list1 
+
+		#拼接list1：join list1 
 		for i in list:
 			text = self.browser.find_element_by_xpath(xpath_part1+str(i)+xpath_part2+'1'+xpath_part3div).text
 			self.list1 = self.list1+[[text]]
@@ -429,11 +489,8 @@ class StartCrawler(object):
 				
 		print(self.list1)
 		
-		########### join list2
-		#for i in list:
-		#	for j in range(5,8):
-		#		text=self.browser.find_element_by_xpath(xpath_part1+i+xpath_part2+j+xpath_part3).text
-		#		list[i-1]=list[i-1]+[text]
+		#join list2
+
 		for i in list:
 			time.sleep(3)
 			self.get_order(i-1)
@@ -443,12 +500,17 @@ class StartCrawler(object):
 		# back to root frame
 		print(self.allot_data_list)
 		self.browser.switch_to.parent_frame()
-		with open('./csv/allotdata.csv','w') as f:
+
+		# 将得到的拼接数据写入到csv文件中
+		with open('./csv/ALLOTDATA.csv','w',newline='') as f:
 			f_csv = csv.writer(f)
 			f_csv.writerows(self.allot_data_list)
 		
 		
 	def get_order(self,order_num):
+		"""
+		获取每个具体调拨单的数据
+		"""
 		# execute js,move to first order info
 		time.sleep(1)
 		allot_code = "viewARecord("+str(order_num)+",\"ama_ALLOCATE_CODE\")"
@@ -462,7 +524,7 @@ class StartCrawler(object):
 		xpath_info_part3div= "]/div"
 		
 		
-		# get total game num
+		# 获取游戏的数量 get total game num
 		time.sleep(2)
 		i=1
 		game_count = 0
@@ -476,7 +538,7 @@ class StartCrawler(object):
 				break
 		
 		print(game_count)
-		# add game code
+		# 添加游戏编号add game code
 		i = 1
 		while i <= game_count:
 			xpath_game_code=xpath_info_part1+str(i)+xpath_info_part2+'1'+xpath_info_part3div
@@ -484,7 +546,7 @@ class StartCrawler(object):
 			i=i+1
 		
 		print(self.list2)
-		# add game info
+		# 添加游戏其他信息 add game info
 		i=1
 		while i<=game_count:
 			for j in range(2,8):
@@ -494,7 +556,7 @@ class StartCrawler(object):
 			i=i+1
 		
 		print(self.list2)
-		# get first order list,put list info into list2
+		# 拼接list2 get first order list,put list info into list2
 		current_date=time.strftime('%Y-%m-%d',time.localtime(time.time()))
 		i=1
 		while i<=game_count:
@@ -507,10 +569,11 @@ if __name__ =="__main__":
 	Crawler.start_drive()
 	Crawler.TODO()
 	Crawler.instant_business()
-	#Crawler.get_JX201()
-	#Crawler.get_B402()
-	#Crawler.get_A205()
-	#Crawler.get_Q102()
+	Crawler.get_JX201()
+	Crawler.get_B402()
+	Crawler.get_A205()
+	Crawler.get_Q102()
 	Crawler.get_AllotData()
+	Crawler.get_begin_data()
 
 
