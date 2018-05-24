@@ -24,13 +24,15 @@ class LotteryDatabase:
 		for table in self.__table_list:
 			data = table.get_data()
 			sql = table.insert_sql
+			if data is None:
+				continue
 			for da in data:
 				#print for testing
 				print(da)
 				sqldata = sql+str(tuple(da))
 				print(sqldata)
 				self.__cursor.execute(sqldata)
-			self.__conn.commit();
+			self.__conn.commit()
  
 	# release object 
 	def __del__(self):
