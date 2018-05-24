@@ -99,6 +99,8 @@ class StartCrawler(object):
 		time.sleep(1)
 		js_JiKai = "if('31000000'=='55999999'){window.location.href = '/ump/system/toELPSystem.action'}else{if(top.checkUmpBlock()){clearBack();switchModule('31000000','即开业务', 'ilms', '10');}else{return false;}}"
 		self.browser.execute_script(js_JiKai)
+		time.sleep(1)
+		self.statement_management()
 		# back to root frame
 		self.browser.switch_to.parent_frame()
 	
@@ -126,56 +128,6 @@ class StartCrawler(object):
 		time.sleep(2)
 
 
-	def get_begin_data(self):
-		"""
-		得到当前的有效数据时间
-		"""
-		#1. 定位报表管理
-		#focus on topFrame
-		self.switch_which_frame("topFrame")
-		time.sleep(1)
-		self.statement_management() #点击报表管理
-		# back to root frame
-		self.browser.switch_to.parent_frame()
-		#2. 定位ZAFFIL报表WEB展现
-		self.switch_which_frame("leftFrame")
-
-		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']"
-
-		i = 0
-		while True:
-			try:
-				self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
-			except NoSuchElementException:
-				# time.sleep(1) 
-				print(str(i))
-				i = i +1
-			else:
-				print("Find this element ")
-				break
-		# self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
-		print("Finish ZAFFIL")
-
-		#3. 定位JX201
-		Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content8']/li[@sizset='76']/a[@menuId='31140915']"
-		self.browser.find_element_by_xpath(Xpath_JX201).click()
-		print("Finish find JX201")
-		self.browser.switch_to.parent_frame()
-
-		# switch to mainFrame
-		self.switch_which_frame("mainFrame")
-		#4. 得到时间
-		elem = self.browser.find_element_by_id("BEGIN_DATE")
-		begine_data = elem.get_attribute("value")
-		#click statement management again
-		self.browser.switch_to.parent_frame()
-		#focus on topFrame
-		self.switch_which_frame("topFrame")
-		time.sleep(1)
-		self.statement_management() #点击报表管理
-		time.sleep(2)
-		self.browser.switch_to.parent_frame()
-		return begine_data
 
 	def get_JX201(self):
 		"""

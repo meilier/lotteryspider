@@ -2,6 +2,10 @@
 
 This is a spider project for getting data automatically from lottery website and sending it to database.
 
+## Version update Info
+This version is based in v3.0 and fixed time problem, thus we can test either table crawler fast.
+
+
 ## Spdier Part
 
 Using selenium as spider
