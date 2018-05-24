@@ -133,6 +133,12 @@ class StartCrawler(object):
 		自动点击下载
 		"""
 		os.system("click_save.exe")
+
+	def autoit_click_30(self):
+		"""
+		自动点击下载,下载等待30s
+		"""
+		os.system("click_save_30.exe")
 	
 	def statement_management(self):
 		"""
@@ -364,7 +370,7 @@ class StartCrawler(object):
 		"""
 		下载Q_102报表到共享文件夹/csv 文件目录中
 		"""
-		# 1.点击查询报表 get in left frame for quering yreport 
+		# 1.点击查询报表 get in left frame for quering report 
 		self.switch_which_frame("leftFrame")
 		
 		time.sleep(3)
@@ -397,11 +403,29 @@ class StartCrawler(object):
 		self.download_csv()
 		
 		# click save and exit
-		self.autoit_click()
-		#back to main frame
-		self.browser.switch_to.parent_frame()
+		self.autoit_click_30()
 
-		# 3.2 sr数据click sr
+		#back to main frame
+		self.browser.switch_to.default_content()
+
+		time.sleep(3)
+		# 1.点击查询报表 get in left frame for quering yreport 
+		self.switch_which_frame("leftFrame")
+		time.sleep(3)
+		
+		# 2. 点击Q102报表  locating Q102
+		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+		self.browser.find_element_by_xpath(Xpath_Q102).click()
+		print("Finish find Q102")
+		self.browser.switch_to.parent_frame()
+		time.sleep(5)
+
+
+
+		self.switch_which_frame("mainFrame")
+		time.sleep(2)
+
+		# 3.2 sr数据click sr 
 		self.browser.find_element_by_id('awardType3').click()
 		time.sleep(2)
 		# click query
@@ -416,7 +440,21 @@ class StartCrawler(object):
 		# click save and exit
 		self.autoit_click()
 		#back to main frame
+		self.browser.switch_to.default_content()
+
+		time.sleep(3)
+		# 1.点击查询报表 get in left frame for quering yreport 
+		self.switch_which_frame("leftFrame")
+		time.sleep(3)	
+		
+		# 2. 点击Q102报表  locating Q102
+		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+		self.browser.find_element_by_xpath(Xpath_Q102).click()
+		print("Finish find Q102")
 		self.browser.switch_to.parent_frame()
+		time.sleep(5)
+
+		self.switch_which_frame("mainFrame")
 
 		# 3.3 center数据click center
 		self.browser.find_element_by_id('awardType4').click()
@@ -433,9 +471,24 @@ class StartCrawler(object):
 		# click save and exit
 		self.autoit_click()
 		#back to main frame
-		self.browser.switch_to.parent_frame()
+		self.browser.switch_to.default_content()
 
+
+		time.sleep(3)
+		# 1.点击查询报表 get in left frame for quering yreport 
+		self.switch_which_frame("leftFrame")
 		
+		time.sleep(3)
+		
+		# 2. 点击Q102报表  locating Q102
+		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+		self.browser.find_element_by_xpath(Xpath_Q102).click()
+		print("Finish find Q102")
+		self.browser.switch_to.parent_frame()
+		time.sleep(5)
+
+		self.switch_which_frame("mainFrame")
+
 		# 3.4 cclient数据click cclient
 		self.browser.find_element_by_id('awardType5').click()
 		time.sleep(2)
@@ -452,27 +505,6 @@ class StartCrawler(object):
 		self.autoit_click()
 		#back to main frame
 		self.browser.switch_to.parent_frame()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		#back to root
 		self.browser.switch_to.parent_frame()
