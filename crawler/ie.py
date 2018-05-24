@@ -7,11 +7,15 @@ import time
 from selenium.common.exceptions import NoSuchFrameException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import JavascriptException
+from selenium.common.exceptions import TimeoutException
 # from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
 import os
 import csv
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 class StartCrawler(object):
 
@@ -39,6 +43,7 @@ class StartCrawler(object):
 		"""
 		#打开浏览器
 		self.browser = webdriver.Ie()
+		self.browser.implicitly_wait(10)
 		self.browser.get('https://3.13.1.10/loginnew.html')
 
 		#输入PIN码
@@ -47,7 +52,6 @@ class StartCrawler(object):
 		pin_code.send_keys("11111111")  # 默认PIN码
 		#点击登录按钮
 		login_button = self.browser.find_element_by_xpath("/html/body/form/div/table/tbody/tr[2]/td/table[2]/tbody/tr/td/input[1]").click()
-		time.sleep(10)
 		
 	
 	def switch_which_frame(self, frame_name):
@@ -57,8 +61,9 @@ class StartCrawler(object):
 		i = 0
 		while True:
 			try:
-				self.browser.switch_to.frame(frame_name)
-			except NoSuchFrameException:
+				# self.browser.switch_to.frame(frame_name)
+				WebDriverWait(self.browser,10).until(EC.frame_to_be_available_and_switch_to_it(frame_name))
+			except TimeoutException:
 				time.sleep(1) 
 				print(str(i))
 				i = i +1
@@ -80,42 +85,12 @@ class StartCrawler(object):
 			else:
 				print("click download csv successfully")
 				break
-	# def find_which_element(self, element_name):
-	# 	"""
-	# 	切换Frame
-	# 	"""
-	# 	i = 0
-	# 	while True:
-	# 		try:
-	# 			self.browser.switch_to.frame(frame_name)
-	# 		except NoSuchFrameException:
-	# 			time.sleep(1) 
-	# 			print(str(i))
-	# 			i = i +1
-	# 		else:
-	# 			print("Find this "+frame_name)
-	# 			break
+
 		
 	def instant_business(self):
 		"""
 		点击即开业务
 		"""
-		#得到网页
-		# self.browser.get("https://3.13.1.20:/ump/index.html")
-		i = 0
-		for handler in self.browser.window_handles:
-			print(str(i))
-			print(len(self.browser.window_handles))
-			url = self.browser.current_url
-			print(str(url))
-			if str(url) == "https://3.13.1.20/ump/index.html":
-				self.browser.switch_to.window(handler)
-				print("Focus into this page")
-				break
-			else:
-				continue
-		print("All page have print")
-		print(self.browser.current_url)
 
 		#focus on topFrame
 		self.switch_which_frame("topFrame")
@@ -133,7 +108,7 @@ class StartCrawler(object):
 		自动点击下载
 		"""
 		os.system("click_save.exe")
-
+	
 	def autoit_click_30(self):
 		"""
 		自动点击下载,下载等待30s
@@ -164,6 +139,7 @@ class StartCrawler(object):
 		self.browser.switch_to.parent_frame()
 		#2. 定位ZAFFIL报表WEB展现
 		self.switch_which_frame("leftFrame")
+
 		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']"
 
 		i = 0
@@ -171,7 +147,7 @@ class StartCrawler(object):
 			try:
 				self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
 			except NoSuchElementException:
-				time.sleep(1) 
+				# time.sleep(1) 
 				print(str(i))
 				i = i +1
 			else:
@@ -180,7 +156,6 @@ class StartCrawler(object):
 		# self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
 		print("Finish ZAFFIL")
 
-		time.sleep(2)
 		#3. 定位JX201
 		Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content8']/li[@sizset='76']/a[@menuId='31140915']"
 		self.browser.find_element_by_xpath(Xpath_JX201).click()
@@ -190,7 +165,6 @@ class StartCrawler(object):
 		# switch to mainFrame
 		self.switch_which_frame("mainFrame")
 		#4. 得到时间
-		time.sleep(2)
 		elem = self.browser.find_element_by_id("BEGIN_DATE")
 		begine_data = elem.get_attribute("value")
 		#click statement management again
@@ -209,14 +183,11 @@ class StartCrawler(object):
 		"""
 	
 		#1. 定位ZAFFIL报表WEB展现
-		time.sleep(1)
 		self.switch_which_frame("leftFrame")
-		time.sleep(1)
 		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']"
 		self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
 		print("Finish ZAFFIL")
 
-		time.sleep(2)
 		#2. 定位JX201
 		Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content8']/li[@sizset='76']/a[@menuId='31140915']"
 		self.browser.find_element_by_xpath(Xpath_JX201).click()
@@ -226,7 +197,6 @@ class StartCrawler(object):
 		# switch to mainFrame
 		self.switch_which_frame("mainFrame")
 		# 3. 获取全局 爬取时间，然后查询
-		# time.sleep(2)
 		# elem = self.browser.find_element_by_id("BEGIN_DATE")
 		# self.begin_date = elem.get_attribute("value")
 		time.sleep(2)
@@ -255,7 +225,6 @@ class StartCrawler(object):
 		# 1. 点击销售兑奖 get in left frame for sales and claiming
 		self.switch_which_frame("leftFrame")
 		
-		time.sleep(5)
 		xpath_sales = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140500']"
 		self.browser.find_element_by_xpath(xpath_sales).send_keys(Keys.ENTER)
 		print("Finish get sales and claiming")
@@ -265,7 +234,6 @@ class StartCrawler(object):
 		self.browser.find_element_by_xpath(Xpath_B402).click()
 		print("Finish find B402")
 		self.browser.switch_to.parent_frame()
-		time.sleep(5)
 
 		
 		# 3. 查询
@@ -297,7 +265,6 @@ class StartCrawler(object):
 		# 1. 点击库存 get in left frame for inventory
 		self.switch_which_frame("leftFrame")
 		
-		time.sleep(5)
 		xpath_sales = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140300']"
 		self.browser.find_element_by_xpath(xpath_sales).send_keys(Keys.ENTER)
 		print("Finish get inventory")
@@ -307,13 +274,11 @@ class StartCrawler(object):
 		self.browser.find_element_by_xpath(Xpath_A205).click()
 		print("Finish find A205")
 		self.browser.switch_to.parent_frame()
-		time.sleep(3)
 		
 		# 3. 查询
 		# switch to mainFrame
 		self.switch_which_frame("mainFrame")
 		# chose storehouse
-		time.sleep(3)
 		
 		
 		Xpath_A205_lookup = "/html/body/div[3]/div/form/table/tbody/tr/td[4]/table/tbody/tr/td[2]/div/div[@class='u-lookupIcon']"
@@ -335,12 +300,10 @@ class StartCrawler(object):
 				break
 
 		# 点击查找仓库 small button
-		time.sleep(2)
 		name_A205_small = "singledataGrid"
 		self.browser.find_element_by_name(name_A205_small).click()
 		
 		# back to mainFrame , move to confirm frame
-		time.sleep(2)
 		self.browser.find_element_by_id('confirmBtn_label').click()
 		print("click confirm key")
 		
@@ -372,8 +335,7 @@ class StartCrawler(object):
 		"""
 		# 1.点击查询报表 get in left frame for quering report 
 		self.switch_which_frame("leftFrame")
-		
-		time.sleep(3)
+
 		xpath_query = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31141000']"
 		self.browser.find_element_by_xpath(xpath_query).send_keys(Keys.ENTER)
 		print("Finish get statement query")
@@ -383,13 +345,11 @@ class StartCrawler(object):
 		self.browser.find_element_by_xpath(Xpath_Q102).click()
 		print("Finish find Q102")
 		self.browser.switch_to.parent_frame()
-		time.sleep(5)
 
 		
 		# 3. 查询
 		# switch to mainFrame
 		self.switch_which_frame("mainFrame")
-		time.sleep(3)
 		# 3.1 门店数据click store 
 		self.browser.find_element_by_id('awardType2').click()
 		time.sleep(2)
@@ -408,22 +368,19 @@ class StartCrawler(object):
 		#back to main frame
 		self.browser.switch_to.default_content()
 
-		time.sleep(3)
+
 		# 1.点击查询报表 get in left frame for quering yreport 
 		self.switch_which_frame("leftFrame")
-		time.sleep(3)
 		
 		# 2. 点击Q102报表  locating Q102
 		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
 		self.browser.find_element_by_xpath(Xpath_Q102).click()
 		print("Finish find Q102")
 		self.browser.switch_to.parent_frame()
-		time.sleep(5)
 
 
 
 		self.switch_which_frame("mainFrame")
-		time.sleep(2)
 
 		# 3.2 sr数据click sr 
 		self.browser.find_element_by_id('awardType3').click()
@@ -442,17 +399,14 @@ class StartCrawler(object):
 		#back to main frame
 		self.browser.switch_to.default_content()
 
-		time.sleep(3)
 		# 1.点击查询报表 get in left frame for quering yreport 
 		self.switch_which_frame("leftFrame")
-		time.sleep(3)	
 		
 		# 2. 点击Q102报表  locating Q102
 		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
 		self.browser.find_element_by_xpath(Xpath_Q102).click()
 		print("Finish find Q102")
 		self.browser.switch_to.parent_frame()
-		time.sleep(5)
 
 		self.switch_which_frame("mainFrame")
 
@@ -473,19 +427,14 @@ class StartCrawler(object):
 		#back to main frame
 		self.browser.switch_to.default_content()
 
-
-		time.sleep(3)
 		# 1.点击查询报表 get in left frame for quering yreport 
 		self.switch_which_frame("leftFrame")
-		
-		time.sleep(3)
 		
 		# 2. 点击Q102报表  locating Q102
 		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
 		self.browser.find_element_by_xpath(Xpath_Q102).click()
 		print("Finish find Q102")
 		self.browser.switch_to.parent_frame()
-		time.sleep(5)
 
 		self.switch_which_frame("mainFrame")
 
@@ -508,7 +457,7 @@ class StartCrawler(object):
 
 		#back to root
 		self.browser.switch_to.parent_frame()
-
+		
 	def get_AllotData(self):
 		"""
 		拼接地市调拨数据
@@ -530,7 +479,6 @@ class StartCrawler(object):
 		# 1. 点击普通调拨get in left frame for normal allot data
 		self.switch_which_frame("leftFrame")
 		
-		time.sleep(3)
 		xpath_normal = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31030200']"
 		self.browser.find_element_by_xpath(xpath_normal).send_keys(Keys.ENTER)
 		print("Finish get normal allot")
@@ -540,7 +488,6 @@ class StartCrawler(object):
 		self.browser.find_element_by_xpath(Xpath_allot_data).click()
 		print("Finish find allot order query")
 		self.browser.switch_to.parent_frame()
-		time.sleep(3)
 		
 		
 
@@ -553,7 +500,6 @@ class StartCrawler(object):
 		# 数据拼接格式： 列表1+列表2+日期
 		# switch to mainFrame
 		self.switch_which_frame("mainFrame")
-		time.sleep(2)
 		
 		# 采用相对定位
 		xpath_allot_number = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[1]/nobr/div"
@@ -570,7 +516,6 @@ class StartCrawler(object):
 		i = 1
 		#保存当前日志调拨单的数量 list save allot date items which date equals current date  ,such as list=[1,2]
 		list=[]
-		time.sleep(2)
 		while i <=10:
 			xpath_create_date = "//div[@id='page-0']/div["+str(i)+"]/table[@class='dojoxGrid-row-table']/tbody/tr/td[4]/nobr"
 			create_date = self.browser.find_element_by_xpath(xpath_create_date).text
@@ -580,8 +525,7 @@ class StartCrawler(object):
 				i=i+1
 			else:
 				break
-		
-		time.sleep(2)
+
 
 		#拼接list1：join list1 
 		for i in list:
@@ -597,7 +541,6 @@ class StartCrawler(object):
 		#join list2
 
 		for i in list:
-			time.sleep(3)
 			self.get_order(i-1)
 			# click backbtn
 			self.browser.find_element_by_id('backBtn').click()
@@ -630,7 +573,6 @@ class StartCrawler(object):
 		
 		
 		# 获取游戏的数量 get total game num
-		time.sleep(2)
 		i=1
 		game_count = 0
 		while True:
