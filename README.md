@@ -2,6 +2,11 @@
 
 This is a spider project for getting data automatically from lottery website and sending it to database.
 
+
+## Version update Info
+
+In this version , we can get all info from the website, update q102 all tables, including q102 table downloading and its tables uploading to the  database.
+
 ## Spdier Part
 
 Using selenium as spider
@@ -44,7 +49,7 @@ class MyTable(Table):
 ```python3 
 from table.py import MyTable
 
-\#mt means mytable and ld means lottery_database
+#mt means mytable and ld means lottery_database
 
 mt = MyTable()
 ld.addTable(mt)
