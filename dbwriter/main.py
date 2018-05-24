@@ -1,5 +1,5 @@
 from lottery_database import LotteryDatabase
-from table import JX201Table, B402Table, A205Table, Q102Table, AllotDataTable
+from table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable
 import lottery_util
 import time, datetime
 
@@ -7,13 +7,19 @@ ld = LotteryDatabase()
 jxt = JX201Table()
 bt = B402Table()
 at = A205Table()
-qt = Q102Table()
+qtst = Q102StoreTable()
+qtsr = Q102SrTable()
+qtce = Q102CenterTable()
+qtcc = Q102CclientTable()
 adt = AllotDataTable()
 
 ld.add_table(jxt)
 ld.add_table(bt)
 ld.add_table(at)
-ld.add_table(qt)
+ld.add_table(qtst)
+ld.add_table(qtsr)
+ld.add_table(qtce)
+ld.add_table(qtcc)
 ld.add_table(adt)
 
 #call sipder

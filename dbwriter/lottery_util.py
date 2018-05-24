@@ -103,7 +103,7 @@ def change_files_name():
 	#	filedir = filedir + '\\'
 	#elif(((platform == 'Linux' and (filedir[-1] != '\\'))):
 	#	filedir = filedir + '/'
-
+	Q102_List=[]
 	for root, dirs, filenames in os.walk(wdcsv):
 		for files in filenames:
 			if re.match('A205', files , flags=0):
@@ -114,6 +114,7 @@ def change_files_name():
 				JX201_name = re.match('JX201.*', files, flags=0).group()
 			if re.match('Q102', files , flags=0):
 				Q102_name = re.match('Q102.*', files, flags=0).group()
+				Q102_List = Q102_List + [Q102_name]
 	A205_old_name = os.path.join(root,A205_name)
 	A205_new_name = os.path.join(root,"A205.csv")
 	os.rename(A205_old_name,A205_new_name)
@@ -126,9 +127,21 @@ def change_files_name():
 	JX201_new_name = os.path.join(root,"JX201.csv")
 	os.rename(JX201_old_name,JX201_new_name)
 
-	Q102_old_name = os.path.join(root,Q102_name)
-	Q102_new_name = os.path.join(root,"Q102.csv")
-	os.rename(Q102_old_name,Q102_new_name)
+	Q102_store_old_name = os.path.join(root,Q102_List[0])
+	Q102_store_new_name = os.path.join(root,"Q102_STORE.csv")
+	os.rename(Q102_store_old_name,Q102_store_new_name)
+
+	Q102_sr_old_name = os.path.join(root,Q102_List[1])
+	Q102_sr_new_name = os.path.join(root,"Q102_SR.csv")
+	os.rename(Q102_sr_old_name,Q102_sr_new_name)
+
+	Q102_center_old_name = os.path.join(root,Q102_List[2])
+	Q102_center_new_name = os.path.join(root,"Q102_CENTER.csv")
+	os.rename(Q102_center_old_name,Q102_center_new_name)
+
+	Q102_cclient_old_name = os.path.join(root,Q102_List[3])
+	Q102_cclient_new_name = os.path.join(root,"Q102_CCLIENT.csv")
+	os.rename(Q102_cclient_old_name,Q102_cclient_new_name)
 
 	# for files in os.listdir(wdcsv):
 	# 	if re.match('A205', files , flags=0):
@@ -170,9 +183,9 @@ def check_csv_files():
 			JX201_name = re.match('JX201.*', files, flags=0).group()
 			JX201_count = JX201_count + 1
 		if re.match('Q102', files , flags=0):
-			JX201_name = re.match('Q102.*', files, flags=0).group()
+			Q201_name = re.match('Q102.*', files, flags=0).group()
 			Q102_count = Q102_count + 1
-	if (A205_count == 1 and  B402_count == 1 and JX201_count == 1 and Q102_count == 1 and ALLOTDATA_count == 1):
+	if (A205_count == 1 and  B402_count == 1 and JX201_count == 1 and Q102_count == 4 and ALLOTDATA_count == 1):
 		return True
 	else:
 		return False

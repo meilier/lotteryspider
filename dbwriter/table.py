@@ -99,13 +99,13 @@ class A205Table(Table):
 		data_and_date = [i+[date] for i in data]
 		return data_and_date
 
-class Q102Table(Table):
+class Q102StoreTable(Table):
 	@property
 	def filename(self):
-		return 'Q102.csv'
+		return 'Q102_STORE.csv'
 	@property
 	def insert_sql(self):
-		return "INSERT INTO CLAIM_PRIZE_INFO_ALL (PROVINCE_CODE, PROVINCE_NAME, CITY_CODE, CITY_NAME, COUNTRY_CODE, COUNTRY_NAME, ORGANIZATION_TYPE, ORGANIZATION_CODE, ORGANIZATION_NAME, CLAIM_DATE, GAME_CODE, GAME_NAME, TERMINAL_CODE, FACE_VALUE, PACKAGE_NUMBER, TICKET_NUMBER, PRIZE_CLASS, PRIZE_MONEY, STORE_CODE, ACTIVE_TIME, PACKAGE_STATE, MANAGE_DATE) VALUES "
+		return "INSERT INTO CLAIM_PRIZE_INFO_STORE (PROVINCE_CODE, PROVINCE_NAME, CITY_CODE, CITY_NAME, COUNTRY_CODE, COUNTRY_NAME, ORGANIZATION_TYPE, ORGANIZATION_CODE, ORGANIZATION_NAME, CLAIM_DATE, GAME_CODE, GAME_NAME, TERMINAL_CODE, FACE_VALUE, PACKAGE_NUMBER, TICKET_NUMBER, PRIZE_CLASS, PRIZE_MONEY, STORE_CODE, ACTIVE_TIME, PACKAGE_STATE, MANAGE_DATE) VALUES "
 	
 	def get_data(self):
 		with open(wdcsv+self.filename) as f:
@@ -115,6 +115,64 @@ class Q102Table(Table):
 		data = contents[4:20]
 		data_and_date = [i+[date] for i in data]
 		return data_and_date
+
+class Q102SrTable(Table):
+	@property
+	def filename(self):
+		return 'Q102_SR.csv'
+	@property
+	def insert_sql(self):
+		return "INSERT INTO CLAIM_PRIZE_INFO_SR (PROVINCE_CODE, PROVINCE_NAME, CITY_CODE, CITY_NAME, COUNTRY_CODE, COUNTRY_NAME, ORGANIZATION_TYPE, ORGANIZATION_CODE, ORGANIZATION_NAME, CLAIM_DATE, GAME_CODE, GAME_NAME, TERMINAL_CODE, FACE_VALUE, PACKAGE_NUMBER, TICKET_NUMBER, PRIZE_CLASS, PRIZE_MONEY, STORE_CODE, ACTIVE_TIME, PACKAGE_STATE, MANAGE_DATE) VALUES "
+	
+	def get_data(self):
+		with open(wdcsv+self.filename) as f:
+			reader = csv.reader(f)
+			contents =[i for i in reader]
+		date = contents[2][0][5:15]
+		data = contents[4:20]
+		data_and_date = [i+[date] for i in data]
+		return data_and_date
+
+class Q102CenterTable(Table):
+	@property
+	def filename(self):
+		return 'Q102_CENTER.csv'
+	@property
+	def insert_sql(self):
+		return "INSERT INTO CLAIM_PRIZE_INFO_CENTER (PROVINCE_CODE, PROVINCE_NAME, CITY_CODE, CITY_NAME, COUNTRY_CODE, COUNTRY_NAME, ORGANIZATION_TYPE, ORGANIZATION_CODE, ORGANIZATION_NAME, CLAIM_DATE, GAME_CODE, GAME_NAME, TERMINAL_CODE, FACE_VALUE, PACKAGE_NUMBER, TICKET_NUMBER, PRIZE_CLASS, PRIZE_MONEY, STORE_CODE, ACTIVE_TIME, PACKAGE_STATE, MANAGE_DATE) VALUES "
+	
+	def get_data(self):
+		with open(wdcsv+self.filename) as f:
+			reader = csv.reader(f)
+			contents =[i for i in reader]
+		data = contents[4:]
+		if data[0][0] == "":
+			return None
+		date = contents[2][0][5:15]
+		data_and_date = [i+[date] for i in data]
+		return data_and_date
+
+class Q102CclientTable(Table):
+	@property
+	def filename(self):
+		return 'Q102_CCLIENT.csv'
+	@property
+	def insert_sql(self):
+		return "INSERT INTO CLAIM_PRIZE_INFO_CCLIENT (PROVINCE_CODE, PROVINCE_NAME, CITY_CODE, CITY_NAME, COUNTRY_CODE, COUNTRY_NAME, ORGANIZATION_TYPE, ORGANIZATION_CODE, ORGANIZATION_NAME, CLAIM_DATE, GAME_CODE, GAME_NAME, TERMINAL_CODE, FACE_VALUE, PACKAGE_NUMBER, TICKET_NUMBER, PRIZE_CLASS, PRIZE_MONEY, STORE_CODE, ACTIVE_TIME, PACKAGE_STATE, MANAGE_DATE) VALUES "
+	
+	def get_data(self):
+		with open(wdcsv+self.filename) as f:
+			reader = csv.reader(f)
+			contents =[i for i in reader]
+		data = contents[4:20]
+		if data[0][0] == "":
+			return None
+		date = contents[2][0][5:15]
+		data_and_date = [i+[date] for i in data]
+		return data_and_date
+
+
+
 
 class AllotDataTable(Table):
 	@property

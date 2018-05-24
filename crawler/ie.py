@@ -384,8 +384,24 @@ class StartCrawler(object):
 		# switch to mainFrame
 		self.switch_which_frame("mainFrame")
 		time.sleep(3)
+		# 3.1 门店数据click store 
+		self.browser.find_element_by_id('awardType2').click()
+		time.sleep(2)
+		# click query
+		js_Query = "queryRecord()"
+		self.browser.execute_script(js_Query)
+		time.sleep(3)
 		
-		# click sr
+		# . 下载Q102 报表 download Q102 csv file
+		self.switch_which_frame("report")
+		self.download_csv()
+		
+		# click save and exit
+		self.autoit_click()
+		#back to main frame
+		self.browser.switch_to.parent_frame()
+
+		# 3.2 sr数据click sr
 		self.browser.find_element_by_id('awardType3').click()
 		time.sleep(2)
 		# click query
@@ -393,14 +409,71 @@ class StartCrawler(object):
 		self.browser.execute_script(js_Query)
 		time.sleep(3)
 		
-		# 4. 下载Q102 报表 download Q102 csv file
+		#  下载Q102 报表 download Q102 csv file
 		self.switch_which_frame("report")
 		self.download_csv()
 		
-		#5. click save and exit
+		# click save and exit
 		self.autoit_click()
 		#back to main frame
 		self.browser.switch_to.parent_frame()
+
+		# 3.3 center数据click center
+		self.browser.find_element_by_id('awardType4').click()
+		time.sleep(2)
+		# click query
+		js_Query = "queryRecord()"
+		self.browser.execute_script(js_Query)
+		time.sleep(3)
+		
+		# . 下载Q102 报表 download Q102 csv file
+		self.switch_which_frame("report")
+		self.download_csv()
+		
+		# click save and exit
+		self.autoit_click()
+		#back to main frame
+		self.browser.switch_to.parent_frame()
+
+		
+		# 3.4 cclient数据click cclient
+		self.browser.find_element_by_id('awardType5').click()
+		time.sleep(2)
+		# click query
+		js_Query = "queryRecord()"
+		self.browser.execute_script(js_Query)
+		time.sleep(3)
+		
+		# . 下载Q102 报表 download Q102 csv file
+		self.switch_which_frame("report")
+		self.download_csv()
+		
+		# click save and exit
+		self.autoit_click()
+		#back to main frame
+		self.browser.switch_to.parent_frame()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		#back to root
 		self.browser.switch_to.parent_frame()
 
@@ -569,11 +642,11 @@ if __name__ =="__main__":
 	Crawler.start_drive()
 	Crawler.TODO()
 	Crawler.instant_business()
-	Crawler.get_JX201()
-	Crawler.get_B402()
-	Crawler.get_A205()
+	# Crawler.get_JX201()
+	# Crawler.get_B402()
+	# Crawler.get_A205()
 	Crawler.get_Q102()
-	Crawler.get_AllotData()
-	Crawler.get_begin_data()
+	# Crawler.get_AllotData()
+	# Crawler.get_begin_data()
 
 
