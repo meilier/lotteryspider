@@ -103,7 +103,7 @@ def change_files_name():
 	#	filedir = filedir + '\\'
 	#elif(((platform == 'Linux' and (filedir[-1] != '\\'))):
 	#	filedir = filedir + '/'
-	Q102_List=[]
+	Q102_List = [] # for sort
 	for root, dirs, filenames in os.walk(wdcsv):
 		for files in filenames:
 			if re.match('A205', files , flags=0):
@@ -115,6 +115,10 @@ def change_files_name():
 			if re.match('Q102', files , flags=0):
 				Q102_name = re.match('Q102.*', files, flags=0).group()
 				Q102_List = Q102_List + [Q102_name]
+
+	Q102_List.sort()
+	print(Q102_List)
+	
 	A205_old_name = os.path.join(root,A205_name)
 	A205_new_name = os.path.join(root,"A205.csv")
 	os.rename(A205_old_name,A205_new_name)
@@ -127,6 +131,7 @@ def change_files_name():
 	JX201_new_name = os.path.join(root,"JX201.csv")
 	os.rename(JX201_old_name,JX201_new_name)
 
+	
 	Q102_store_old_name = os.path.join(root,Q102_List[0])
 	Q102_store_new_name = os.path.join(root,"Q102_STORE.csv")
 	os.rename(Q102_store_old_name,Q102_store_new_name)
