@@ -67,6 +67,8 @@ class StartCrawler(object):
 				time.sleep(1) 
 				print(str(i))
 				i = i +1
+				if i >3:
+					raise TimeoutException
 			else:
 				print("Find this "+frame_name)
 				break
@@ -109,11 +111,23 @@ class StartCrawler(object):
 		"""
 		os.system("click_save.exe")
 	
+	def autoit_click_25(self):
+		"""
+		自动点击下载,下载等待25s
+		"""
+		os.system("click_save_25.exe")
+	
 	def autoit_click_30(self):
 		"""
-		自动点击下载,下载等待30s
+		自动点击下载,下载等待40s
 		"""
 		os.system("click_save_30.exe")
+
+	def autoit_click_40(self):
+		"""
+		自动点击下载,下载等待40s
+		"""
+		os.system("click_save_40.exe")
 	
 	def statement_management(self):
 		"""
@@ -150,6 +164,8 @@ class StartCrawler(object):
 				# time.sleep(1) 
 				print(str(i))
 				i = i +1
+				if i >3:
+					raise NoSuchElementException
 			else:
 				print("Find this element ")
 				break
@@ -210,7 +226,7 @@ class StartCrawler(object):
 		self.download_csv()
 		
 		#5. 点击下载保存 click save and exit
-		self.autoit_click()
+		self.autoit_click_30()
 		#back to main frame
 		self.browser.switch_to.parent_frame()
 		#back to root
@@ -295,6 +311,8 @@ class StartCrawler(object):
 				time.sleep(1) 
 				print(str(i))
 				i = i +1
+				if i > 3:
+					raise NoSuchFrameException
 			else:
 				print("Find this iframe")
 				break
@@ -352,7 +370,7 @@ class StartCrawler(object):
 		self.switch_which_frame("mainFrame")
 		# 3.1 门店数据click store 
 		self.browser.find_element_by_id('awardType2').click()
-		time.sleep(2)
+		# time.sleep(2)
 		# click query
 		js_Query = "queryRecord()"
 		self.browser.execute_script(js_Query)
@@ -363,7 +381,7 @@ class StartCrawler(object):
 		self.download_csv()
 		
 		# click save and exit
-		self.autoit_click_30()
+		self.autoit_click_40()
 
 		#back to main frame
 		self.browser.switch_to.default_content()

@@ -3,6 +3,8 @@
 import os, time
 import datetime
 from ie import StartCrawler
+import traceback
+import threading
 
 class Crawler(object):
 
@@ -10,23 +12,60 @@ class Crawler(object):
         pass
 
     def start(self):
-        n_crawler = StartCrawler()
-        n_crawler.start_drive()
-        n_crawler.TODO()
-        n_crawler.instant_business()
         while True:
-            begin_data = n_crawler.get_begin_data()
-            if self.check_data(begin_data):
-                self.delete_csv_files() #清空文件夹
+            try :
+                n_crawler = StartCrawler()
+                n_crawler.start_drive()
+                n_crawler.TODO()
+                n_crawler.instant_business()
+                i = 0
+                browser_time = 0
+                while True:
+                    try :
+                        begin_data = n_crawler.get_begin_data()
+                        if self.check_data(begin_data):
+                            nowTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            with open("Time.txt","w") as f:
+                                f.write(nowTime)
+                            print(nowTime)
+                            self.delete_csv_files() #清空文件夹
+                            n_crawler.get_B402()
+                            n_crawler.get_JX201()
+                            n_crawler.get_A205()
+                            n_crawler.get_Q102()
+                            n_crawler.get_AllotData()
+                            self.write_control_date(begin_data) #写控制文件
+                            i = 0
+                        else:
+                            browser_time = browser_time + 1
+                            print("current time is : " + str(browser_time))
+                            print("============Sleeping============")
+                            time.sleep(10)
+                    except Exception as e:
+                        traceback.print_exc()
+                        i = i+1
+                        if i>3:
+                            time.sleep(10)
+                            break
+                        else:
+                            continue
+            except Exception as e:
+                traceback.print_exc()
+                #time.sleep(300)
+                ptint("thread start ")
+                wait_thread = threading.Thread(target = self.start_sleep_thread,args=())
+                wait_thread.start()
+                wait_thread.join()
+                print("Thread Stoped")
+                continue
 
-                n_crawler.get_B402()
-                n_crawler.get_JX201()
-                n_crawler.get_A205()
-                n_crawler.get_Q102()
-                n_crawler.get_AllotData()
-                self.write_control_date(begin_data) #写控制文件
-            else:
-                time.sleep(300)
+
+    def start_sleep_thread(self):
+        i=0
+        while i<5:
+            print("sleep count" + str(i+1))
+            time.sleep(3)
+
 
     def delete_csv_files(self):
         """
