@@ -37,3 +37,17 @@ class LotteryDatabase:
 	# release object 
 	def __del__(self):
 		self.__conn.close()
+	
+	# del data
+	def def_JX201_data(self,table_name,date):
+		"""
+		传入表名以及日期参数,例如 "T_PHONE_LOTTERY_TICKET_ALL" "2018-05-23"
+		"""
+		sqldata = "DELETE FROM" + table_name + "WHERE MANAGE_DATE = " + date
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		self.__cursor.commit()
+
+
+
+		
