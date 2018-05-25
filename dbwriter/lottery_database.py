@@ -39,15 +39,41 @@ class LotteryDatabase:
 		self.__conn.close()
 	
 	# del data
-	def def_sqldata(self,table_name,date):
+	def del_sqldata(self,table_name,date):
 		"""
 		传入表名以及日期参数,例如 "T_PHONE_LOTTERY_TICKET_ALL" "2018-05-23"
 		"""
 		sqldata = "DELETE FROM" + table_name + "WHERE MANAGE_DATE = " + date
 		print(sqldata)
 		self.__cursor.execute(sqldata)
-		self.__cursor.commit()
+		self.__conn.commit()
 
+	def del_all_data(self):
+		sqldata = "TRUNCATE TABLE T_PHONE_LOTTERY_TICKET_ALL"
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		sqldata = "TRUNCATE TABLE INVENTORY_INFO_ALL"
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		sqldata = "TRUNCATE TABLE SALES_ALL"
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		sqldata = "TRUNCATE TABLE CLAIM_PRIZE_INFO_STORE"
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		sqldata = "TRUNCATE TABLE CLAIM_PRIZE_INFO_SR"
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		sqldata = "TRUNCATE TABLE CLAIM_PRIZE_INFO_CENTER"
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		sqldata = "TRUNCATE TABLE CLAIM_PRIZE_INFO_CCLIENT"
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		sqldata = "TRUNCATE TABLE ALLOT_DATA"
+		print(sqldata)
+		self.__cursor.execute(sqldata)
+		self.__conn.commit()
 
 
 		
