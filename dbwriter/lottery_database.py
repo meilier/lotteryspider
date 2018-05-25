@@ -33,6 +33,7 @@ class LotteryDatabase:
 				print(sqldata)
 				self.__cursor.execute(sqldata)
 			self.__conn.commit()
+			print("commit success")
  
 	# release object 
 	def __del__(self):

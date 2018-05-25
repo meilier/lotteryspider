@@ -37,7 +37,7 @@ class JX201Table(Table):
 		#title = contents[4]
 		date = contents[2][1][:10]
 		#15 item for test
-		data = contents[5:20]
+		data = contents[5:]
 		for i ,item in enumerate(data):
 			for j, item2 in enumerate(item):
 				if(j <=3):
@@ -112,7 +112,7 @@ class Q102StoreTable(Table):
 			reader = csv.reader(f)
 			contents =[i for i in reader]
 		date = contents[2][0][5:15]
-		data = contents[4:20]
+		data = contents[4:]
 		data_and_date = [i+[date] for i in data]
 		return data_and_date
 
@@ -129,7 +129,7 @@ class Q102SrTable(Table):
 			reader = csv.reader(f)
 			contents =[i for i in reader]
 		date = contents[2][0][5:15]
-		data = contents[4:20]
+		data = contents[4:]
 		data_and_date = [i+[date] for i in data]
 		return data_and_date
 
@@ -164,7 +164,7 @@ class Q102CclientTable(Table):
 		with open(wdcsv+self.filename) as f:
 			reader = csv.reader(f)
 			contents =[i for i in reader]
-		data = contents[4:20]
+		data = contents[4:]
 		if data[0][0] == "":
 			return None
 		date = contents[2][0][5:15]

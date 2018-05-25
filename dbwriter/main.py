@@ -22,6 +22,7 @@ ld.add_table(qtce)
 ld.add_table(qtcc)
 ld.add_table(adt)
 
+
 #call sipder
 
 
@@ -42,7 +43,7 @@ def start_dbwriter(control_date):
 		with open("control.cfg","w") as f:
 			f.write('')
 		print('reset successfully')
-		time.sleep(300)
+		time.sleep(600)
 	else:
 		#core logic
 		print('check success')
@@ -60,12 +61,12 @@ def start_dbwriter(control_date):
 			#call this py in crontab next hour
 			#delete csv files
 			print("two check failed exit(0)")
-			exit(0)
+			#exit(0)
 			lottery_util.delete_csv_files()
 			with open("control.cfg","w") as f:
 				f.write('')
 			print('reset successfully')
-			time.sleep(300)
+			time.sleep(600)
 
 #check csv files exist in dir or not
 while True:
@@ -79,6 +80,7 @@ while True:
 		start_dbwriter(current_control_date)
 
 	else:
-		time.sleep(300)	
+		print("sleep 10 miniutes")
+		time.sleep(600)	
 
 

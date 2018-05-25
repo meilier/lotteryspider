@@ -42,7 +42,7 @@ class StartCrawler(object):
 		自动登录模块
 		"""
 		#打开浏览器
-		self.browser = webdriver.Ie()
+		self.browser = webdriver.Ie(capabilities={ 'ignoreZoomSetting':True})
 		self.browser.implicitly_wait(10)
 		self.browser.get('https://3.13.1.10/loginnew.html')
 

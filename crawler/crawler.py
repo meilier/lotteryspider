@@ -52,7 +52,7 @@ class Crawler(object):
             except Exception as e:
                 traceback.print_exc()
                 #time.sleep(300)
-                ptint("thread start ")
+                print("thread start ")
                 wait_thread = threading.Thread(target = self.start_sleep_thread,args=())
                 wait_thread.start()
                 wait_thread.join()
@@ -64,6 +64,7 @@ class Crawler(object):
         i=0
         while i<5:
             print("sleep count" + str(i+1))
+            i = i + 1
             time.sleep(3)
 
 
