@@ -39,7 +39,7 @@ class LotteryDatabase:
 		self.__conn.close()
 	
 	# del data
-	def def_JX201_data(self,table_name,date):
+	def def_sqldata(self,table_name,date):
 		"""
 		传入表名以及日期参数,例如 "T_PHONE_LOTTERY_TICKET_ALL" "2018-05-23"
 		"""
