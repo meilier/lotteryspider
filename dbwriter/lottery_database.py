@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import cx_Oracle
 import os
+import time
 
 class LotteryDatabase:
 
@@ -11,7 +12,8 @@ class LotteryDatabase:
 	#Table list stroing tables add to this class
 	__table_list =[]
 
-	def __init__(self):
+	#init object
+	def init(self):
 		self.__conn = cx_Oracle.connect('sports_lottery_data/demo123@172.19.112.11/orcl')
 		self.__cursor = self.__conn.cursor()
 
@@ -21,6 +23,9 @@ class LotteryDatabase:
 
 	#insert data to oracle database
 	def insert_data(self):
+		self.init()
+		print("init success,sleep 3s and start to insert data")
+		time.sleep(3)
 		for table in self.__table_list:
 			data = table.get_data()
 			sql = table.insert_sql
@@ -34,7 +39,11 @@ class LotteryDatabase:
 				self.__cursor.execute(sqldata)
 			self.__conn.commit()
 			print("commit success")
+		self.close()
+		print("close success,sleep 3s and exit")
+		
  
 	# release object 
-	def __del__(self):
+	def close(self):
 		self.__conn.close()
+		print("close success")
