@@ -61,7 +61,7 @@ class B402Table(Table):
 			contents = [i[1:] for i in reader]
 		#title = contents[7]
 		date = contents[4][1][:10]
-		data = contents[-18:-2]
+		data = contents[8:-2]
 		for i ,item in enumerate(data):
 			for j, item2 in enumerate(item):
 				if(j ==0 or j==1 or j==4 or j==7 or j== 10):
