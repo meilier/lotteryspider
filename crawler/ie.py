@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
+import crawler_util
 from selenium.common.exceptions import NoSuchFrameException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import JavascriptException
@@ -109,25 +110,8 @@ class StartCrawler(object):
 		"""
 		自动点击下载
 		"""
-		os.system("click_save.exe")
+		os.system("click_new.exe")
 	
-	def autoit_click_25(self):
-		"""
-		自动点击下载,下载等待25s
-		"""
-		os.system("click_save_25.exe")
-	
-	def autoit_click_30(self):
-		"""
-		自动点击下载,下载等待40s
-		"""
-		os.system("click_save_30.exe")
-
-	def autoit_click_40(self):
-		"""
-		自动点击下载,下载等待40s
-		"""
-		os.system("click_save_40.exe")
 	
 	def statement_management(self):
 		"""
@@ -154,12 +138,13 @@ class StartCrawler(object):
 		#2. 定位ZAFFIL报表WEB展现
 		self.switch_which_frame("leftFrame")
 
-		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']"
+		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']/img"
 
 		i = 0
 		while True:
 			try:
-				self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
+				#self.browser.find_element_by_xpath(Xpath_ZAFFIL).send_keys(Keys.ENTER)
+				self.browser.find_element_by_xpath(Xpath_ZAFFIL).click()
 			except NoSuchElementException:
 				# time.sleep(1) 
 				print(str(i))
@@ -223,16 +208,36 @@ class StartCrawler(object):
 		# 4. 下载文件 jx201 csv file
 		self.switch_which_frame("report")
 		
-		self.download_csv()
-		
-		#5. 点击下载保存 click save and exit
-		self.autoit_click_30()
+		download_count = 0
+		check_count = 0
+		while True:
+			self.download_csv()
+			#5. 点击下载保存 click save and exit
+			self.autoit_click()
+			#检测文件是否存在
+			time.sleep(10)
+			while True:
+				file_exist = crawler_util.check_JX201_file()
+				if(file_exist == True):
+					crawler_util.change_JX201_name()
+					break
+				else:
+					time.sleep(5)
+					check_count = check_count +1
+					if(check_count > 12):
+						break
+			if(file_exist == True):
+				break
+			download_count = download_count +1
+			if(download_count >2 ):
+				break
+
 		#back to main frame
 		self.browser.switch_to.parent_frame()
 		#back to root
 		self.browser.switch_to.parent_frame()
 
-		pass
+		return file_exist
 
 	def get_B402(self):
 		"""
@@ -263,16 +268,34 @@ class StartCrawler(object):
 		# 4. 下载文件download B402 csv file
 		self.switch_which_frame("report")
 
-		self.download_csv()
-
-		
-		#5. 点击下载保存click save and exit
-		self.autoit_click()
+		download_count = 0
+		check_count = 0
+		while True:
+			self.download_csv()
+			#5. 点击下载保存 click save and exit
+			self.autoit_click()
+			#检测文件是否存在
+			time.sleep(10)
+			while True:
+				file_exist = crawler_util.check_B402_file()
+				if(file_exist == True):
+					crawler_util.change_B402_name()
+					break
+				else:
+					time.sleep(5)
+					check_count = check_count +1
+					if(check_count > 12):
+						break
+			if(file_exist == True):
+				break
+			download_count = download_count +1
+			if(download_count >2 ):
+				break
 		#back to main frame
 		self.browser.switch_to.parent_frame()
 		#back to root
 		self.browser.switch_to.parent_frame()
-		
+		return file_exist
 
 	def get_A205(self):
 		"""
@@ -337,20 +360,44 @@ class StartCrawler(object):
 		
 		# 4. 下载A205报表 download A205 csv file
 		self.switch_which_frame("report")
-		self.download_csv()
-		# Alert(self.browser).accept()
-		
-		#5. 点击保存 click save and exit
-		self.autoit_click()
+		download_count = 0
+		check_count = 0
+		while True:
+			self.download_csv()
+			#5. 点击下载保存 click save and exit
+			self.autoit_click()
+			#检测文件是否存在
+			time.sleep(10)
+			while True:
+				file_exist = crawler_util.check_A205_file()
+				if(file_exist == True):
+					crawler_util.change_A205_name()
+					break
+				else:
+					time.sleep(5)
+					check_count = check_count +1
+					if(check_count > 36):
+						break
+			if(file_exist == True):
+				break
+			download_count = download_count +1
+			if(download_count >2 ):
+				break
 		#back to main frame
 		self.browser.switch_to.parent_frame()
 		#back to root
 		self.browser.switch_to.parent_frame()
+
+		return file_exist
 		
 	def get_Q102(self):
 		"""
 		下载Q_102报表到共享文件夹/csv 文件目录中
 		"""
+		store_count = 0
+		sr_count = 0
+		center_count = 0
+		cclient_count = 0
 		# 1.点击查询报表 get in left frame for quering report 
 		self.switch_which_frame("leftFrame")
 
@@ -378,10 +425,29 @@ class StartCrawler(object):
 		
 		# . 下载Q102 报表 download Q102 csv file
 		self.switch_which_frame("report")
-		self.download_csv()
-		
-		# click save and exit
-		self.autoit_click_40()
+		download_count = 0
+		check_count = 0
+		while True:
+			self.download_csv()
+			#5. 点击下载保存 click save and exit
+			self.autoit_click()
+			#检测文件是否存在
+			time.sleep(10)
+			while True:
+				store_file_exist = crawler_util.check_Q102_store_file()
+				if(store_file_exist == True):
+					crawler_util.change_Q102_store_name()
+					break
+				else:
+					time.sleep(5)
+					check_count = check_count +1
+					if(check_count > 36):
+						break
+			if(store_file_exist == True):
+				break
+			download_count = download_count +1
+			if(download_count >2 ):
+				break
 
 		#back to main frame
 		self.browser.switch_to.default_content()
@@ -410,10 +476,29 @@ class StartCrawler(object):
 		
 		#  下载Q102 报表 download Q102 csv file
 		self.switch_which_frame("report")
-		self.download_csv()
-		
-		# click save and exit
-		self.autoit_click()
+		download_count = 0
+		check_count = 0
+		while True:
+			self.download_csv()
+			#5. 点击下载保存 click save and exit
+			self.autoit_click()
+			#检测文件是否存在
+			time.sleep(10)
+			while True:
+				sr_file_exist = crawler_util.check_Q102_sr_file()
+				if(sr_file_exist == True):
+					crawler_util.change_Q102_sr_name()
+					break
+				else:
+					time.sleep(5)
+					check_count = check_count +1
+					if(check_count > 36):
+						break
+			if(store_file_exist == True):
+				break
+			download_count = download_count +1
+			if(download_count >2 ):
+				break
 		#back to main frame
 		self.browser.switch_to.default_content()
 
@@ -438,10 +523,29 @@ class StartCrawler(object):
 		
 		# . 下载Q102 报表 download Q102 csv file
 		self.switch_which_frame("report")
-		self.download_csv()
-		
-		# click save and exit
-		self.autoit_click()
+		download_count = 0
+		check_count = 0
+		while True:
+			self.download_csv()
+			#5. 点击下载保存 click save and exit
+			self.autoit_click()
+			#检测文件是否存在
+			time.sleep(10)
+			while True:
+				center_file_exist = crawler_util.check_Q102_center_file()
+				if(center_file_exist == True):
+					crawler_util.change_Q102_center_name()
+					break
+				else:
+					time.sleep(5)
+					check_count = check_count +1
+					if(check_count > 36):
+						break
+			if(store_file_exist == True):
+				break
+			download_count = download_count +1
+			if(download_count >2 ):
+				break
 		#back to main frame
 		self.browser.switch_to.default_content()
 
@@ -466,15 +570,37 @@ class StartCrawler(object):
 		
 		# . 下载Q102 报表 download Q102 csv file
 		self.switch_which_frame("report")
-		self.download_csv()
-		
-		# click save and exit
-		self.autoit_click()
+		download_count = 0
+		check_count = 0
+		while True:
+			self.download_csv()
+			#5. 点击下载保存 click save and exit
+			self.autoit_click()
+			#检测文件是否存在
+			time.sleep(10)
+			while True:
+				cclient_file_exist = crawler_util.check_Q102_cclient_file()
+				if(cclient_file_exist == True):
+					crawler_util.change_Q102_cclient_name()
+					break
+				else:
+					time.sleep(5)
+					check_count = check_count +1
+					if(check_count > 36):
+						break
+			if(store_file_exist == True):
+				break
+			download_count = download_count +1
+			if(download_count >2 ):
+				break
 		#back to main frame
 		self.browser.switch_to.parent_frame()
 
 		#back to root
 		self.browser.switch_to.parent_frame()
+
+		exist_file_list = [store_file_exist,sr_file_exist,center_file_exist,cclient_file_exist]
+		return exist_file_list
 		
 	def get_AllotData(self):
 		"""

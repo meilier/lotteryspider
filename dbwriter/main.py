@@ -39,34 +39,22 @@ def start_dbwriter(control_date):
 	"""
 	开始写入今天的数据
 	"""
-	if(not lottery_util.check_csv_files()):#call spider again, say another words ,set control.cfg none
+	if(lottery_util.compare_total_money()):
+		print('prepare to insert data')
+		ld.insert_data()
+		lottery_util.delete_csv_files()
+		with open("flag.cfg","w") as f:
+			f.write(control_date)
+	else:
+		#call this py in crontab next hour
+		#delete csv files
+		print("two check failed exit(0)")
+		#exit(0)
+		lottery_util.delete_csv_files()
 		with open("control.cfg","w") as f:
 			f.write('')
 		print('reset successfully')
 		time.sleep(600)
-	else:
-		#core logic
-		print('check success')
-		lottery_util.change_files_name() 
-		print('rename success')
-		#there we have some conditions when we insert data to database because data my not ready for)
-		#if(lottery_util.compare_total_money() and lottery_util.compare_total_claim_money()):
-		if(lottery_util.compare_total_money()):
-			print('prepare to insert data')
-			ld.insert_data()
-			lottery_util.delete_csv_files()
-			with open("flag.cfg","w") as f:
-				f.write(control_date)
-		else:
-			#call this py in crontab next hour
-			#delete csv files
-			print("two check failed exit(0)")
-			#exit(0)
-			lottery_util.delete_csv_files()
-			with open("control.cfg","w") as f:
-				f.write('')
-			print('reset successfully')
-			time.sleep(600)
 
 #check csv files exist in dir or not
 while True:
