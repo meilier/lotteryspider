@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import csv
 import re
+import datetime
 from abc import ABC, abstractmethod
 from lottery_util import wdcsv
 
@@ -177,10 +178,20 @@ class Q102CclientTable(Table):
 class AllotDataTable(Table):
 	@property
 	def filename(self):
-		return 'AllotData.csv'
+		return 'ALLOTDATA.csv'
 	@property
 	def insert_sql(self):
 		return "INSERT INTO ALLOT_DATA (ALLOT_NUMBER, OUTBOUND_WAREHOUSE, INBOUND_WAREHOUSE, GAME_CODE, GAME_NAME, GAME_FACE_VALUE, ALLOT_CASE_NUMBER, ALLOT_SCATTERED_PACKAGE, ALLOT_TOTAL_PACKAGE, ALLOT_TOTAL_MONEY, MANAGE_DATE) VALUES "
 	
 	def get_data(self):
 		print('hello')
+		with open(wdcsv+self.filename) as f:
+			reader = csv.reader(f)
+			contents =[i for i in reader]
+		data = contents
+		if data[0][0] == "":
+			return None
+		today=datetime.date.today()
+		date=today.strftime('%Y-%m-%d')
+		data_and_date = [i+[date] for i in data]
+		return data_and_date

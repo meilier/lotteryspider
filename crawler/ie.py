@@ -30,6 +30,9 @@ class StartCrawler(object):
 	# 最终的地市调拨数据拼接列表
 	allot_data_list=[]
 
+	#file already download or not
+	already_download_list = {'A205':False,'B402':False,'JX201':False,'Q102_STORE':False,'Q102_SR':False,'Q102_CENTER':False,'Q102_CCLIENT':False,'ALLOT_DATA':False}
+
 	def __init__(self):
 		pass
 		
@@ -183,6 +186,9 @@ class StartCrawler(object):
 		下载JX_201报表到共享文件夹/csv 文件目录中
 		"""
 	
+		#check already download or not
+		if(self.already_download_list['JX201'] == True):
+			return
 		#1. 定位ZAFFIL报表WEB展现
 		self.switch_which_frame("leftFrame")
 		Xpath_ZAFFIL = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31140900']"
@@ -220,6 +226,7 @@ class StartCrawler(object):
 				file_exist = crawler_util.check_JX201_file()
 				if(file_exist == True):
 					crawler_util.change_JX201_name()
+					self.already_download_list['JX201'] = True
 					break
 				else:
 					time.sleep(5)
@@ -243,6 +250,9 @@ class StartCrawler(object):
 		"""
 		下载B_402报表到共享文件夹/csv 文件目录中
 		"""
+		#check already download or not
+		if(self.already_download_list['B402'] == True):
+			return
 		# 1. 点击销售兑奖 get in left frame for sales and claiming
 		self.switch_which_frame("leftFrame")
 		
@@ -280,6 +290,7 @@ class StartCrawler(object):
 				file_exist = crawler_util.check_B402_file()
 				if(file_exist == True):
 					crawler_util.change_B402_name()
+					self.already_download_list['B402'] = True
 					break
 				else:
 					time.sleep(5)
@@ -301,6 +312,9 @@ class StartCrawler(object):
 		"""
 		下载A_205报表到共享文件夹/csv 文件目录中
 		"""
+		#check already download or not
+		if(self.already_download_list['A205'] == True):
+			return
 		# 1. 点击库存 get in left frame for inventory
 		self.switch_which_frame("leftFrame")
 		
@@ -372,6 +386,7 @@ class StartCrawler(object):
 				file_exist = crawler_util.check_A205_file()
 				if(file_exist == True):
 					crawler_util.change_A205_name()
+					self.already_download_list['A205'] = True
 					break
 				else:
 					time.sleep(5)
@@ -394,210 +409,219 @@ class StartCrawler(object):
 		"""
 		下载Q_102报表到共享文件夹/csv 文件目录中
 		"""
+		#check already download or not
+		if(self.already_download_list['Q102_STORE'] == True and self.already_download_list['Q102_SR'] == True and self.already_download_list['Q102_CENTER'] == True and self.already_download_list['Q102_CCLIENT'] == True):
+			return
 		store_count = 0
 		sr_count = 0
 		center_count = 0
 		cclient_count = 0
-		# 1.点击查询报表 get in left frame for quering report 
-		self.switch_which_frame("leftFrame")
+		if(self.already_download_list['Q102_STORE'] == False):
+			# 1.点击查询报表 get in left frame for quering report 
+			self.switch_which_frame("leftFrame")
 
-		xpath_query = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31141000']"
-		self.browser.find_element_by_xpath(xpath_query).send_keys(Keys.ENTER)
-		print("Finish get statement query")
-		
-		# 2. 点击Q102报表  locating Q102
-		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
-		self.browser.find_element_by_xpath(Xpath_Q102).click()
-		print("Finish find Q102")
-		self.browser.switch_to.parent_frame()
+			xpath_query = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/div[@class='lnavbg1']/a[@menuId='31141000']"
+			self.browser.find_element_by_xpath(xpath_query).send_keys(Keys.ENTER)
+			print("Finish get statement query")
+			
+			# 2. 点击Q102报表  locating Q102
+			Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+			self.browser.find_element_by_xpath(Xpath_Q102).click()
+			print("Finish find Q102")
+			self.browser.switch_to.parent_frame()
 
-		
-		# 3. 查询
-		# switch to mainFrame
-		self.switch_which_frame("mainFrame")
-		# 3.1 门店数据click store 
-		self.browser.find_element_by_id('awardType2').click()
-		# time.sleep(2)
-		# click query
-		js_Query = "queryRecord()"
-		self.browser.execute_script(js_Query)
-		time.sleep(3)
-		
-		# . 下载Q102 报表 download Q102 csv file
-		self.switch_which_frame("report")
-		download_count = 0
-		check_count = 0
-		while True:
-			self.download_csv()
-			#5. 点击下载保存 click save and exit
-			self.autoit_click()
-			#检测文件是否存在
-			time.sleep(10)
+			
+			# 3. 查询
+			# switch to mainFrame
+			self.switch_which_frame("mainFrame")
+
+			# 3.1 门店数据click store 
+			self.browser.find_element_by_id('awardType2').click()
+			# time.sleep(2)
+			# click query
+			js_Query = "queryRecord()"
+			self.browser.execute_script(js_Query)
+			time.sleep(3)
+			
+			# . 下载Q102 报表 download Q102 csv file
+			self.switch_which_frame("report")
+			download_count = 0
+			check_count = 0
 			while True:
-				store_file_exist = crawler_util.check_Q102_store_file()
+				self.download_csv()
+				#5. 点击下载保存 click save and exit
+				self.autoit_click()
+				#检测文件是否存在
+				time.sleep(10)
+				while True:
+					store_file_exist = crawler_util.check_Q102_store_file()
+					if(store_file_exist == True):
+						crawler_util.change_Q102_store_name()
+						self.already_download_list['Q102_STORE'] = True
+						break
+					else:
+						time.sleep(5)
+						check_count = check_count +1
+						if(check_count > 36):
+							break
 				if(store_file_exist == True):
-					crawler_util.change_Q102_store_name()
 					break
-				else:
-					time.sleep(5)
-					check_count = check_count +1
-					if(check_count > 36):
-						break
-			if(store_file_exist == True):
-				break
-			download_count = download_count +1
-			if(download_count >2 ):
-				break
+				download_count = download_count +1
+				if(download_count >2 ):
+					break
 
-		#back to main frame
-		self.browser.switch_to.default_content()
+			#back to main frame
+			self.browser.switch_to.default_content()
 
-
-		# 1.点击查询报表 get in left frame for quering yreport 
-		self.switch_which_frame("leftFrame")
-		
-		# 2. 点击Q102报表  locating Q102
-		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
-		self.browser.find_element_by_xpath(Xpath_Q102).click()
-		print("Finish find Q102")
-		self.browser.switch_to.parent_frame()
+		if(self.already_download_list['Q102_SR'] == False):
+			# 1.点击查询报表 get in left frame for quering yreport 
+			self.switch_which_frame("leftFrame")
+			
+			# 2. 点击Q102报表  locating Q102
+			Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+			self.browser.find_element_by_xpath(Xpath_Q102).click()
+			print("Finish find Q102")
+			self.browser.switch_to.parent_frame()
 
 
 
-		self.switch_which_frame("mainFrame")
+			self.switch_which_frame("mainFrame")
 
-		# 3.2 sr数据click sr 
-		self.browser.find_element_by_id('awardType3').click()
-		time.sleep(2)
-		# click query
-		js_Query = "queryRecord()"
-		self.browser.execute_script(js_Query)
-		time.sleep(3)
-		
-		#  下载Q102 报表 download Q102 csv file
-		self.switch_which_frame("report")
-		download_count = 0
-		check_count = 0
-		while True:
-			self.download_csv()
-			#5. 点击下载保存 click save and exit
-			self.autoit_click()
-			#检测文件是否存在
-			time.sleep(10)
+			# 3.2 sr数据click sr 
+			self.browser.find_element_by_id('awardType3').click()
+			time.sleep(2)
+			# click query
+			js_Query = "queryRecord()"
+			self.browser.execute_script(js_Query)
+			time.sleep(3)
+			
+			#  下载Q102 报表 download Q102 csv file
+			self.switch_which_frame("report")
+			download_count = 0
+			check_count = 0
 			while True:
-				sr_file_exist = crawler_util.check_Q102_sr_file()
-				if(sr_file_exist == True):
-					crawler_util.change_Q102_sr_name()
-					break
-				else:
-					time.sleep(5)
-					check_count = check_count +1
-					if(check_count > 36):
+				self.download_csv()
+				#5. 点击下载保存 click save and exit
+				self.autoit_click()
+				#检测文件是否存在
+				time.sleep(10)
+				while True:
+					sr_file_exist = crawler_util.check_Q102_sr_file()
+					if(sr_file_exist == True):
+						crawler_util.change_Q102_sr_name()
+						self.already_download_list['Q102_SR'] = True
 						break
-			if(store_file_exist == True):
-				break
-			download_count = download_count +1
-			if(download_count >2 ):
-				break
-		#back to main frame
-		self.browser.switch_to.default_content()
+					else:
+						time.sleep(5)
+						check_count = check_count +1
+						if(check_count > 36):
+							break
+				if(store_file_exist == True):
+					break
+				download_count = download_count +1
+				if(download_count >2 ):
+					break
+			#back to main frame
+			self.browser.switch_to.default_content()
+		if(self.already_download_list['Q102_CENTER'] == False):
+			# 1.点击查询报表 get in left frame for quering yreport 
+			self.switch_which_frame("leftFrame")
+			
+			# 2. 点击Q102报表  locating Q102
+			Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+			self.browser.find_element_by_xpath(Xpath_Q102).click()
+			print("Finish find Q102")
+			self.browser.switch_to.parent_frame()
 
-		# 1.点击查询报表 get in left frame for quering yreport 
-		self.switch_which_frame("leftFrame")
-		
-		# 2. 点击Q102报表  locating Q102
-		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
-		self.browser.find_element_by_xpath(Xpath_Q102).click()
-		print("Finish find Q102")
-		self.browser.switch_to.parent_frame()
+			self.switch_which_frame("mainFrame")
 
-		self.switch_which_frame("mainFrame")
-
-		# 3.3 center数据click center
-		self.browser.find_element_by_id('awardType4').click()
-		time.sleep(2)
-		# click query
-		js_Query = "queryRecord()"
-		self.browser.execute_script(js_Query)
-		time.sleep(3)
-		
-		# . 下载Q102 报表 download Q102 csv file
-		self.switch_which_frame("report")
-		download_count = 0
-		check_count = 0
-		while True:
-			self.download_csv()
-			#5. 点击下载保存 click save and exit
-			self.autoit_click()
-			#检测文件是否存在
-			time.sleep(10)
+			# 3.3 center数据click center
+			self.browser.find_element_by_id('awardType4').click()
+			time.sleep(2)
+			# click query
+			js_Query = "queryRecord()"
+			self.browser.execute_script(js_Query)
+			time.sleep(3)
+			
+			# . 下载Q102 报表 download Q102 csv file
+			self.switch_which_frame("report")
+			download_count = 0
+			check_count = 0
 			while True:
-				center_file_exist = crawler_util.check_Q102_center_file()
-				if(center_file_exist == True):
-					crawler_util.change_Q102_center_name()
-					break
-				else:
-					time.sleep(5)
-					check_count = check_count +1
-					if(check_count > 36):
+				self.download_csv()
+				#5. 点击下载保存 click save and exit
+				self.autoit_click()
+				#检测文件是否存在
+				time.sleep(10)
+				while True:
+					center_file_exist = crawler_util.check_Q102_center_file()
+					if(center_file_exist == True):
+						crawler_util.change_Q102_center_name()
+						self.already_download_list['Q102_CENTER'] = True
 						break
-			if(store_file_exist == True):
-				break
-			download_count = download_count +1
-			if(download_count >2 ):
-				break
-		#back to main frame
-		self.browser.switch_to.default_content()
+					else:
+						time.sleep(5)
+						check_count = check_count +1
+						if(check_count > 36):
+							break
+				if(store_file_exist == True):
+					break
+				download_count = download_count +1
+				if(download_count >2 ):
+					break
+			#back to main frame
+			self.browser.switch_to.default_content()
+		if(self.already_download_list['Q102_CCLIENT'] == False):
+			# 1.点击查询报表 get in left frame for quering yreport 
+			self.switch_which_frame("leftFrame")
+			
+			# 2. 点击Q102报表  locating Q102
+			Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+			self.browser.find_element_by_xpath(Xpath_Q102).click()
+			print("Finish find Q102")
+			self.browser.switch_to.parent_frame()
 
-		# 1.点击查询报表 get in left frame for quering yreport 
-		self.switch_which_frame("leftFrame")
-		
-		# 2. 点击Q102报表  locating Q102
-		Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
-		self.browser.find_element_by_xpath(Xpath_Q102).click()
-		print("Finish find Q102")
-		self.browser.switch_to.parent_frame()
+			self.switch_which_frame("mainFrame")
 
-		self.switch_which_frame("mainFrame")
-
-		# 3.4 cclient数据click cclient
-		self.browser.find_element_by_id('awardType5').click()
-		time.sleep(2)
-		# click query
-		js_Query = "queryRecord()"
-		self.browser.execute_script(js_Query)
-		time.sleep(3)
-		
-		# . 下载Q102 报表 download Q102 csv file
-		self.switch_which_frame("report")
-		download_count = 0
-		check_count = 0
-		while True:
-			self.download_csv()
-			#5. 点击下载保存 click save and exit
-			self.autoit_click()
-			#检测文件是否存在
-			time.sleep(10)
+			# 3.4 cclient数据click cclient
+			self.browser.find_element_by_id('awardType5').click()
+			time.sleep(2)
+			# click query
+			js_Query = "queryRecord()"
+			self.browser.execute_script(js_Query)
+			time.sleep(3)
+			
+			# . 下载Q102 报表 download Q102 csv file
+			self.switch_which_frame("report")
+			download_count = 0
+			check_count = 0
 			while True:
-				cclient_file_exist = crawler_util.check_Q102_cclient_file()
-				if(cclient_file_exist == True):
-					crawler_util.change_Q102_cclient_name()
-					break
-				else:
-					time.sleep(5)
-					check_count = check_count +1
-					if(check_count > 36):
+				self.download_csv()
+				#5. 点击下载保存 click save and exit
+				self.autoit_click()
+				#检测文件是否存在
+				time.sleep(10)
+				while True:
+					cclient_file_exist = crawler_util.check_Q102_cclient_file()
+					if(cclient_file_exist == True):
+						crawler_util.change_Q102_cclient_name()
+						self.already_download_list['Q102_CCLIENT'] = True
 						break
-			if(store_file_exist == True):
-				break
-			download_count = download_count +1
-			if(download_count >2 ):
-				break
-		#back to main frame
-		self.browser.switch_to.parent_frame()
+					else:
+						time.sleep(5)
+						check_count = check_count +1
+						if(check_count > 36):
+							break
+				if(store_file_exist == True):
+					break
+				download_count = download_count +1
+				if(download_count >2 ):
+					break
+			#back to main frame
+			self.browser.switch_to.parent_frame()
 
-		#back to root
-		self.browser.switch_to.parent_frame()
+			#back to root
+			self.browser.switch_to.parent_frame()
 
 		exist_file_list = [store_file_exist,sr_file_exist,center_file_exist,cclient_file_exist]
 		return exist_file_list
@@ -606,6 +630,8 @@ class StartCrawler(object):
 		"""
 		拼接地市调拨数据
 		"""
+		if(self.already_download_list['ALLOTDATA'] == True):
+			return
 		#focus on topFrame
 		self.switch_which_frame("topFrame")
 				
@@ -697,6 +723,7 @@ class StartCrawler(object):
 		with open('./csv/ALLOTDATA.csv','w',newline='') as f:
 			f_csv = csv.writer(f)
 			f_csv.writerows(self.allot_data_list)
+		self.already_download_list['ALLOTDATA'] = True
 		
 		
 	def get_order(self,order_num):

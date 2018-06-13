@@ -35,7 +35,10 @@ class Crawler(object):
                             n_crawler.get_A205()
                             n_crawler.get_Q102()
                             n_crawler.get_AllotData()
-                            self.write_control_date(begin_data) #写控制文件
+                            if(n_crawler.already_download_list['A205'] == True and n_crawler.already_download_list['B402'] == True and n_crawler.already_download_list['JX201'] == True and n_crawler.already_download_list['Q102_STORE'] == True and n_crawler.already_download_list['Q102_SR'] == True and n_crawler.already_download_list['Q102_CENTER'] == True and n_crawler.already_download_list['Q102_CCLIENT'] == True):
+                                self.write_control_date(begin_data) #写控制文件
+                            else:
+                                continue
                             i = 0
                         else:
                             browser_time = browser_time + 1
