@@ -2,8 +2,10 @@ import os
 import re
 
 
+
 wd = os.getcwd()
-wdcsv = wd+'\\csv\\'
+parent_path = os.path.dirname(wd)
+wdcsv = parent_path +'\\csv\\'
 
 def check_csv_files():
 	#if(((platform == 'Windows') and (filedir[-1] != '\\'))):
@@ -63,7 +65,7 @@ def check_Q102_store_file():
 	return False
 def check_Q102_sr_file():
 	for files in os.listdir(wdcsv):
-		if re.match('Q102', files , flags=0):
+		if re.match('Q102', files, flags=0):
 			Q102_name = re.match('Q102.*', files, flags=0).group()
 			if(re.search('.*.partial', Q102_name, flags=0)):
 				continue
@@ -162,3 +164,41 @@ def change_Q102_cclient_name():
 	Q102_store_old_name = os.path.join(root,Q102_name)
 	Q102_store_new_name = os.path.join(root,"Q102_CCLIENT.csv")
 	os.rename(Q102_store_old_name,Q102_store_new_name)
+
+
+def check_file(file_name):
+	result = False
+	if file_name == "B402":
+		result = check_B402_file()
+	if file_name == "JX201":
+		result = check_JX201_file()
+	if file_name == "A205":
+		result = check_A205_file()
+	if file_name == "Q102_STORE":
+		result = check_Q102_store_file()
+	if file_name == "Q102_SR":
+		result = check_Q102_sr_file()
+	if file_name == "Q102_CENTER":
+		result = check_Q102_center_file()
+	if file_name == "Q102_CCLIENT":
+		result = check_Q102_cclient_file()
+		
+	return result
+
+
+def change_file_name(file_name):
+	if file_name == "B402":
+		change_B402_name()
+	if file_name == "JX201":
+		change_JX201_name()
+	if file_name == "A205":
+		change_A205_name()
+	if file_name == "Q102_STORE":
+		change_Q102_store_name()
+	if file_name == "Q102_SR":
+		change_Q102_sr_name()
+	if file_name == "Q102_CENTER":
+		change_Q102_center_name()
+	if file_name == "Q102_CCLIENT":
+		change_Q102_cclient_name()
+

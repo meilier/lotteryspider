@@ -1,7 +1,7 @@
 from lottery_database import LotteryDatabase
 from table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable
 import lottery_util
-import time, datetime
+import time, datetime,os
 
 ld = LotteryDatabase()
 jxt = JX201Table()
@@ -25,7 +25,6 @@ ld.add_table(adt)
 
 #call sipder
 
-
 def get_yesterday():
 	"""
 	得到前一天的信息
@@ -42,16 +41,27 @@ def start_dbwriter(control_date):
 	if(lottery_util.compare_total_money()):
 		print('prepare to insert data')
 		ld.insert_data()
-		lottery_util.delete_csv_files()
-		with open("flag.cfg","w") as f:
+		# lottery_util.delete_csv_files()
+
+		current_path = os.getcwd()
+		parent_path = os.path.dirname(current_path)
+		# control_file_path = os.path.join(parent_path, "control.cfg")
+		flag_file_path = os.path.join(parent_path, "flag.cfg")
+		with open(flag_file_path,"w") as f:
 			f.write(control_date)
 	else:
 		#call this py in crontab next hour
 		#delete csv files
 		print("two check failed exit(0)")
 		#exit(0)
-		lottery_util.delete_csv_files()
-		with open("control.cfg","w") as f:
+		# lottery_util.delete_csv_files()
+
+		current_path = os.getcwd()
+		parent_path = os.path.dirname(current_path)
+		control_file_path = os.path.join(parent_path, "control.cfg")
+		# flag_file_path = os.path.join(parent_path, "flag.cfg")
+
+		with open(control_file_path,"w") as f:
 			f.write('')
 		print('reset successfully')
 		time.sleep(600)
@@ -59,14 +69,26 @@ def start_dbwriter(control_date):
 #check csv files exist in dir or not
 while True:
 	#检查数据是否发布
-	with open("control.cfg","r") as f:
+
+
+	current_path = os.getcwd()
+	parent_path = os.path.dirname(current_path)
+	control_file_path = os.path.join(parent_path, "control.cfg")
+	flag_file_path = os.path.join(parent_path, "flag.cfg")
+
+	with open(control_file_path,"r") as f:
 		current_control_date = f.readline()
-	with open("flag.cfg", "r") as fl:
+	with open(flag_file_path, "r") as fl:
 		flag_date = fl.readline()
 	
-	if not flag_date == current_control_date:
-		start_dbwriter(current_control_date)
+	the_yesterday = get_yesterday()
 
+	print("Controle date : " + str(current_control_date))
+	print("The yesterday is :" + str(the_yesterday))
+	
+	if (not flag_date == current_control_date) and (current_control_date ==  the_yesterday):
+		start_dbwriter(current_control_date)
+		
 	else:
 		print("sleep 10 miniutes")
 		time.sleep(600)	

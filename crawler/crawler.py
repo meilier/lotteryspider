@@ -7,114 +7,159 @@ import crawler_util
 import traceback
 import threading
 
+
 class Crawler(object):
-
     def __init__(self):
-        pass
 
+        self.work_list = {
+            "B402": False,
+            "JX201": False,
+            "A205":False,
+            "Q102_STORE":False,
+            "Q102_SR": False,
+            "Q102_CENTER": False,
+            "Q102_CCLIENT": False,
+            "AllotData": False
+            }
+        pass
+    
     def start(self):
         while True:
-            try :
-                n_crawler = StartCrawler()
-                n_crawler.start_drive()
-                n_crawler.TODO()
-                n_crawler.instant_business()
-                i = 0
-                browser_time = 0
-                while True:
-                    try :
-                        begin_data = n_crawler.get_begin_data()
-                        if self.check_data(begin_data):
-                            nowTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                            with open("Time.txt","w") as f:
-                                f.write(nowTime)
-                            print(nowTime)
-                            self.delete_csv_files() #清空文件夹
-                            n_crawler.get_B402()
-                            n_crawler.get_JX201()
-                            n_crawler.get_A205()
-                            n_crawler.get_Q102()
-                            n_crawler.get_AllotData()
-                            if(n_crawler.already_download_list['A205'] == True and n_crawler.already_download_list['B402'] == True and n_crawler.already_download_list['JX201'] == True and n_crawler.already_download_list['Q102_STORE'] == True and n_crawler.already_download_list['Q102_SR'] == True and n_crawler.already_download_list['Q102_CENTER'] == True and n_crawler.already_download_list['Q102_CCLIENT'] == True):
-                                self.write_control_date(begin_data) #写控制文件
-                            else:
-                                continue
-                            i = 0
-                        else:
-                            browser_time = browser_time + 1
-                            print("current time is : " + str(browser_time))
-                            print("============Sleeping============")
-                            time.sleep(10)
-                    except Exception as e:
-                        traceback.print_exc()
-                        i = i+1
-                        if i>3:
-                            time.sleep(10)
-                            break
-                        else:
-                            continue
+
+            try:
+
+                start_work = self.check_work() # 是否开始工作
             except Exception as e:
                 traceback.print_exc()
-                #time.sleep(300)
-                print("thread start ")
-                wait_thread = threading.Thread(target = self.start_sleep_thread,args=())
-                wait_thread.start()
-                wait_thread.join()
-                print("Thread Stoped")
+                time.sleep(20)
                 continue
 
+            if start_work:
 
-    def start_sleep_thread(self):
-        i=0
-        while i<5:
-            print("sleep count" + str(i+1))
-            i = i + 1
-            time.sleep(3)
+                self.clear_work_list() #清空work_list
+                self.delete_csv_files() #清空下载文件夹
 
-
-    def delete_csv_files(self):
+                except_count = 0
+                while True:
+                    try:
+                        if self.work_all_done():
+                            self.write_control(self.yesterday)
+                            break
+                        else:
+                            self.go_to_work()
+                    except Exception as e:
+                        traceback.print_exc()
+                        except_count = except_count + 1
+                        time.sleep(20)
+                        if except_count > 2:
+                            break
+            else:
+                time.sleep(3600)
+                
+    def clear_work_list(self):
         """
-        清空CSV文件
+        清空work_list
         """
-        wdcsv = "./csv/"
-        for filename in os.listdir(wdcsv):
-            filepath = wdcsv+filename
-            os.remove(filepath)
+        for work in self.work_list.keys():
+            self.work_list[work] = False
+    
+    def work_all_done(self):
+        """
+        检测所有的扒取是否干完
+        """
+        result = True
+        for work in self.work_list.keys():
+            result = result and self.work_list[work]
+        return result
 
-    def write_control_date(self,begin_data):
+    def go_to_work(self):
+        """
+        扒取文件
+        """
+        # Crawler = StartCrawler()
+        # Crawler.autoit_close_all_ie() #关闭所有IE网页
+        # Crawler.log_in() #登录
+        # Crawler.autoit_close() # 关闭多于页
+        # Crawler.get_download_page() #进入下载页
+        # Crawler.instant_business() #进入二代系统
+        # Crawler.statement_management() #进入报表管理
 
-        with open("control.cfg","w") as f:
-            f.write(begin_data)
-        print("Have write control : " + begin_data)
+        for work in self.work_list.keys():
 
-    def check_data(self, begin_data):
-        yesterday = self.get_yesterday()
+            if self.work_list[work] == False:
 
-        print("Check date")
-        print(type(yesterday))
-        print(yesterday)
-        print(type(begin_data))
-        print(begin_data)
+                Crawler = StartCrawler()
+                Crawler.autoit_close_all_ie() #关闭所有IE网页
+                Crawler.log_in() #登录
+                Crawler.autoit_close() # 关闭多于页
+                Crawler.get_download_page() #进入下载页
+                Crawler.instant_business() #进入二代系统
+                Crawler.statement_management() #进入报表管理
+
+                crawler_result = False
+                if work == "B402":
+                    crawler_result=Crawler.get_B402()
+                if work == "JX201":
+                    crawler_result=Crawler.get_JX_201()
+                if work == "A205":
+                    crawler_result=Crawler.get_A205()
+                if work == "Q102_STORE":
+                    crawler_result=Crawler.get_Q102_store()
+                if work == "Q102_SR":
+                    crawler_result=Crawler.get_Q102_sr()
+                if work == "Q102_CENTER":
+                    crawler_result=Crawler.get_Q102_center()
+                if work == "Q102_CCLIENT":
+                    crawler_result=Crawler.get_Q102_cclient()
+                if work == "AllotData":
+                    crawler_result=Crawler.get_AllotData()
+                self.work_list[work] = crawler_result #修改work_list 状态
+                print(self.work_list)
+
+                Crawler.close_Express() #关闭插件
+            else:
+                continue
+
+    def get_begin_date(self):
+        begine_date = StartCrawler().get_begin_date()
+        return begine_date
+
+
+    def check_work(self):
+        self.yesterday = self.get_yesterday()
+        print("Yesterday date is :" + str(self.yesterday))
+        begin_date = self.get_begin_date()
         #时间条件是否满足
-        t_data = False
-        if yesterday == begin_data:
-            t_data = True
+        t_date = False
+        if self.yesterday == begin_date:
+            t_date = True
 
         #日志时间是否满足
         t_control = False
-        with open("control.cfg","r") as f:
-            data=f.readline()
-            if not begin_data==data:
+
+        current_path = os.getcwd()
+        parent_path = os.path.dirname(current_path)
+        file_path = os.path.join(parent_path, "control.cfg")
+
+        with open(file_path,"r") as f:
+            date=f.readline()
+            if not begin_date==date:
                 t_control = True
 
-        print("T_data : "+ str(t_data))
-        print("T_control : "+ str(t_control))
+        #是否为工作时间
+        hour_time = ["06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22"]
+        work_hour = self.get_current_time()
+        work_time = False
 
-        if t_data and t_control:
-            result = True
-        else:
-            result = False
-        print(result)
+        if work_hour in hour_time:
+            work_time = True
+
+        print("T_data : "+ str(t_date))
+        print("T_control : "+ str(t_control))
+        print("Work time :" +str(work_time))
+
+        result = t_control and t_date and work_time
+
         return result
 
     def get_yesterday(self):
@@ -125,7 +170,6 @@ class Crawler(object):
         oneday=datetime.timedelta(days=1) 
         yesterday=today-oneday  
         return yesterday.strftime('%Y-%m-%d')
-
 
     def get_current_data(self):
         """
@@ -141,15 +185,37 @@ class Crawler(object):
         得到当前时间
         """
         data_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        current_time = data_time[11:]
+        current_time = data_time[11:13]
         print(current_time)
-        return current_time
-        
+        return current_time 
+    
+
+    def delete_csv_files(self):
+        """
+        清空CSV文件
+        """
+        wd = os.getcwd()
+        parent_path = os.path.dirname(wd)
+        # parent_2_path = os.path.dirname(parent_path)
+        wdcsv = parent_path +'\\csv\\'
+
+        for filename in os.listdir(wdcsv):
+            filepath = wdcsv+filename
+            os.remove(filepath)
+
+    def write_control(self,begin_data):
+        current_path = os.getcwd()
+        parent_path = os.path.dirname(current_path)
+        file_path = os.path.join(parent_path, "control.cfg")
+
+        with open(file_path,"w") as f:
+            f.write(begin_data)
+        print("Have write control : " + begin_data)
+
 
 
 if __name__ == "__main__":
     C = Crawler()
-    # C.get_current_data()
     # C.get_current_time()
     C.start()
     

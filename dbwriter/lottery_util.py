@@ -11,8 +11,9 @@ transporting the .csv files to the oracle database
 
 os.environ['NLS_LANG']='AMERICAN_AMERICA.ZHS16GBK'
 wd = os.getcwd()
-wdcsv = wd+'\\csv\\'
-
+parent_path = os.path.dirname(wd)
+# parent_2_path = os.path.dirname(parent_path)
+wdcsv = parent_path +'\\csv\\'
 
 
 # replace commma (',') in number column with nothing ('')

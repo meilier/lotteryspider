@@ -174,7 +174,6 @@ class Q102CclientTable(Table):
 
 
 
-
 class AllotDataTable(Table):
 	@property
 	def filename(self):
@@ -189,7 +188,7 @@ class AllotDataTable(Table):
 			reader = csv.reader(f)
 			contents =[i for i in reader]
 		data = contents
-		if data[0][0] == "":
+		if data == []:
 			return None
 		today=datetime.date.today()
 		date=today.strftime('%Y-%m-%d')
