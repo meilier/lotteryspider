@@ -2,6 +2,7 @@
 import cx_Oracle
 import os
 import time
+from table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable
 
 class LotteryDatabase:
 
@@ -47,3 +48,24 @@ class LotteryDatabase:
 	def close(self):
 		self.__conn.close()
 		print("close success")
+
+if __name__ == "__main__":
+	ld = LotteryDatabase()
+	# jxt = JX201Table()
+	# bt = B402Table()
+	# at = A205Table()
+	# qtst = Q102StoreTable()
+	# qtsr = Q102SrTable()
+	# qtce = Q102CenterTable()
+	# qtcc = Q102CclientTable()
+	adt = AllotDataTable()
+
+	# ld.add_table(jxt)
+	# ld.add_table(bt)
+	# ld.add_table(at)
+	# ld.add_table(qtst)
+	# ld.add_table(qtsr)
+	# ld.add_table(qtce)
+	# ld.add_table(qtcc)
+	ld.add_table(adt)
+	ld.insert_data()

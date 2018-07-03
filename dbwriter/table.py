@@ -191,6 +191,5 @@ class AllotDataTable(Table):
 		if data == []:
 			return None
 		today=datetime.date.today()
-		date=today.strftime('%Y-%m-%d')
-		data_and_date = [i+[date] for i in data]
+		data_and_date = data
 		return data_and_date
