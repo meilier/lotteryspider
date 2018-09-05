@@ -7,7 +7,7 @@ import crawler_util
 from selenium.common.exceptions import NoSuchFrameException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import JavascriptException
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 # from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.alert import Alert
@@ -190,8 +190,8 @@ class StartCrawler(object):
         print("Finish ZAFFIL")
 
         #2. 定位JX201
-        Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content8']/li[@sizset='76']/a[@menuId='31140915']"
-        WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.XPATH,Xpath_JX201)))
+        Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content6']/li[@sizset='64']/a[@menuId='31140915']"
+        WebDriverWait(self.browser, 250).until(EC.element_to_be_clickable((By.XPATH,Xpath_JX201)))
         self.browser.find_element_by_xpath(Xpath_JX201).click()
         print("Finish find JX201")
         self.browser.switch_to.parent_frame()
@@ -200,10 +200,10 @@ class StartCrawler(object):
         # switch to mainFrame
 
         self.switch_which_frame("mainFrame")
-        time.sleep(5)
+        time.sleep(10)
         js_Query = "queryRecord()"
         self.browser.execute_script(js_Query)
-        time.sleep(5)
+        time.sleep(10)
 
         # 4. 下载文件 jx201 csv file
 
@@ -279,6 +279,21 @@ class StartCrawler(object):
         self.browser.switch_to.default_content()
         self.switch_which_frame("mainFrame")
         #self.browser.switch_to.parent_frame()
+        # 修改日期
+        yday = crawler_util.get_yesterday()
+        #yday ="2018-07-04"
+        print(str(yday))
+
+        #self.browser.find_element_by_id('DATE').__setattr__("value",yday)
+        input_date = self.browser.find_element_by_id('DATE')
+        self.browser.execute_script("arguments[0].setAttribute('value', arguments[1])", input_date, yday)
+
+        A205_search_date = self.browser.find_element_by_id('DATE').get_property("value")
+        print(str(A205_search_date))
+        self.browser.find_element_by_id('DATE').send_keys(Keys.ENTER)
+        # A205_calender_path = "//td[@id='td1']/div/div[2]"
+        # self.browser.find_element_by_xpath(A205_calender_path).send_keys("2018-07-04")
+
         # 查询
         time.sleep(5)
         js_Query = "queryRecord()"
@@ -314,7 +329,7 @@ class StartCrawler(object):
         print("Finish get statement query")
 
         # 2. 点击Q102报表  locating Q102
-        Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+        Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content7']/li[@sizset='70']/a[@menuId='31141002']"
         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.XPATH,Xpath_Q102)))
         self.browser.find_element_by_xpath(Xpath_Q102).click()
         print("Finish find Q102")
@@ -357,7 +372,8 @@ class StartCrawler(object):
         print("Finish get statement query")
 
         # 2. 点击Q102报表  locating Q102
-        Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+        # Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+        Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content7']/li[@sizset='70']/a[@menuId='31141002']"
         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.XPATH,Xpath_Q102)))
         self.browser.find_element_by_xpath(Xpath_Q102).click()
         print("Finish find Q102")
@@ -400,7 +416,8 @@ class StartCrawler(object):
         print("Finish get statement query")
 
         # 2. 点击Q102报表  locating Q102
-        Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+        # Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+        Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content7']/li[@sizset='70']/a[@menuId='31141002']"
         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.XPATH,Xpath_Q102)))
         self.browser.find_element_by_xpath(Xpath_Q102).click()
         print("Finish find Q102")
@@ -443,7 +460,8 @@ class StartCrawler(object):
         print("Finish get statement query")
 
         # 2. 点击Q102报表  locating Q102
-        Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+        # Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content9']/li[@sizset='82']/a[@menuId='31141002']"
+        Xpath_Q102 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content7']/li[@sizset='70']/a[@menuId='31141002']"
         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.XPATH,Xpath_Q102)))
         self.browser.find_element_by_xpath(Xpath_Q102).click()
         print("Finish find Q102")
@@ -521,9 +539,42 @@ class StartCrawler(object):
         # switch to mainFrame
         self.switch_which_frame("mainFrame")
         
+        # waiting for details arise
+        time.sleep(8)
+        # 修改日期
+        yday = crawler_util.get_yesterday()
+        #yday ="2018-07-04"
+        print(str(yday))
+
+        #self.browser.find_element_by_id('DATE').__setattr__("value",yday)
+        input_date = self.browser.find_element_by_id('ama_CREATED_DATE_B')
+        self.browser.execute_script("arguments[0].setAttribute('value', arguments[1])", input_date, yday)
+
+        A205_search_date = self.browser.find_element_by_id('ama_CREATED_DATE_B').get_property("value")
+        print(str(A205_search_date))
+        self.browser.find_element_by_id('ama_CREATED_DATE_B').send_keys(Keys.ENTER)
+
+        input_date = self.browser.find_element_by_id('ama_CREATED_DATE_D')
+        self.browser.execute_script("arguments[0].setAttribute('value', arguments[1])", input_date, yday)
+
+        A205_search_date = self.browser.find_element_by_id('ama_CREATED_DATE_D').get_property("value")
+        print(str(A205_search_date))
+        self.browser.find_element_by_id('ama_CREATED_DATE_D').send_keys(Keys.ENTER)
+        
+
+        # 查询
+        time.sleep(5)
+        js_Query = "queryRecord()"
+        self.browser.execute_script(js_Query)
+        time.sleep(3)
+
+        #set items per page 
+        self.browser.find_element_by_xpath("//div[@id='navigate']/table/tbody/tr[1]/td/table/tbody/tr/td[2]/table/tbody/tr/td[2]/select/option[3]").click()
+
+
         # 采用相对定位
-        xpath_allot_number = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[1]/nobr/div"
-        print(self.browser.find_element_by_xpath(xpath_allot_number).text)
+        #xpath_allot_number = "//div[@id='page-0']/div[1]/table[@class='dojoxGrid-row-table']/tbody/tr/td[1]/nobr/div"
+        #print(self.browser.find_element_by_xpath(xpath_allot_number).text)
 
         # 拼接元素查找路径
         xpath_part1="//div[@id='page-0']/div["
@@ -531,26 +582,40 @@ class StartCrawler(object):
         xpath_part3="]/nobr"
         xpath_part3div= "]/nobr/div"
         
-        current_date=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+        #current_date=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+        #allot_yesterday = crawler_util.get_yesterday()
+        allot_yesterday = yday
+
+        self.browser.switch_to.parent_frame()
+        self.switch_which_frame("mainFrame")
+
         #查找page-0 中10项，等于当前日期的项
         i = 1
-        #保存当前日志调拨单的数量 list save allot date items which date equals current date  ,such as list=[1,2]
-        list=[]
-        while i <=10:
+        #保存当前日志调拨单的数量 list save allot date items which date equals current date  ,such as crawl_list=[1,2]
+        crawl_list = []
+        while i <= 30:
+            print("i is " + str(i))
             xpath_create_date = "//div[@id='page-0']/div["+str(i)+"]/table[@class='dojoxGrid-row-table']/tbody/tr/td[4]/nobr"
-            create_date = self.browser.find_element_by_xpath(xpath_create_date).text
+            print(xpath_create_date)
+            try:
+                create_date = self.browser.find_element_by_xpath(xpath_create_date).text
+            except NoSuchElementException:
+                break
             print(create_date)
-            if(current_date == create_date):
-                list = list + [i]
-                i=i+1
+            if(allot_yesterday ==  create_date):
+                crawl_list = crawl_list + [i]
+                i = i + 1
             else:
                 break
+        print("the list is " + str(crawl_list))
+
+        # one problem is that when should we turn to the next page ?
 
         #拼接list1：join list1 
-        for i in list:
+        for i in crawl_list:
             text = self.browser.find_element_by_xpath(xpath_part1+str(i)+xpath_part2+'1'+xpath_part3div).text
             self.list1 = self.list1+[[text]]
-        for i in list:
+        for i in crawl_list:
             for j in range(2,4):
                 text=self.browser.find_element_by_xpath(xpath_part1+str(i)+xpath_part2+str(j)+xpath_part3).text
                 self.list1[i-1]=self.list1[i-1]+[text]
@@ -559,7 +624,7 @@ class StartCrawler(object):
         
         #join list2
 
-        for i in list:
+        for i in crawl_list:
             self.get_order(i-1)
             # click backbtn
             WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.ID,"backBtn")))
@@ -631,10 +696,11 @@ class StartCrawler(object):
 		
         print(self.list2)
         # 拼接list2 get first order list,put list info into list2
-        current_date=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+        # current_date=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+        yesterday = crawler_util.get_yesterday()
         i=1
         while i<=game_count:
-            self.allot_data_list+=[self.list1[order_num]+self.list2[i-1]+[current_date]]
+            self.allot_data_list+=[self.list1[order_num]+self.list2[i-1]+[yesterday]]
             i=i+1
 
 
@@ -725,7 +791,9 @@ class StartCrawler(object):
         print("Finish ZAFFIL")
 
         #2. 定位JX201
-        Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content8']/li[@sizset='76']/a[@menuId='31140915']"
+        # Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content8']/li[@sizset='76']/a[@menuId='31140915']"
+        Xpath_JX201 = "/html/body[@class='imgbody']/div[@class='leftbox']/div[@class='menubox']/ul[@id='content6']/li[@sizset='64']/a[@menuId='31140915']"
+
         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.XPATH,Xpath_JX201)))
         self.browser.find_element_by_xpath(Xpath_JX201).click()
         print("Finish find JX201")
@@ -738,8 +806,6 @@ class StartCrawler(object):
         begine_date = elem.get_attribute("value")
 
         return begine_date
-
-
 
 
 
@@ -805,7 +871,7 @@ class StartCrawler(object):
                 print(str(i))
                 i = i +1
                 #if i > 150: # 等待时间超过5分钟，下载不完善，重新下载
-                if i > 150: # 等待时间超过10s，下载不完善，重新下载，无论第一次执行js是否成功，第二次执行js一定失败。
+                if i > 200: # 等待时间超过10s，下载不完善，重新下载，无论第一次执行js是否成功，第二次执行js一定失败。
                     #raise JavascriptException 已经处理异常不再抛出
                     return False
             else:
@@ -816,36 +882,59 @@ class StartCrawler(object):
         """
         自动点击下载
         """
-        os.system("click_click.exe")
+        dirs = os.getcwd()
+        file_root = os.path.join(dirs,"autoit_exe")
+        file_path = os.path.join(file_root,"alts.exe" )
+        os.system(file_path)
     def autoit_click_backup(self):
         """
         鼠标模拟点击csv下载，然后点击下载
         """
-        os.system("click_click_new.exe")
+        dirs = os.getcwd()
+        file_root = os.path.join(dirs,"autoit_exe")
+        file_path = os.path.join(file_root,"click_click_new.exe" )
+        os.system(file_path)
+        #os.system("click_click_new.exe")
     
     def autoit_click_exit(self):
         """
         自动点击下载
         """
-        os.system("click_exit.exe")
+        dirs = os.getcwd()
+        file_root = os.path.join(dirs,"autoit_exe")
+        file_path = os.path.join(file_root,"click_exit.exe" )
+        os.system(file_path)
+        # os.system("click_exit.exe")
 
     def autoit_ontop(self):
         """
         窗口最前面
         """
-        os.system("ontop.exe")  
+        dirs = os.getcwd()
+        file_root = os.path.join(dirs,"autoit_exe")
+        file_path = os.path.join(file_root,"ontop.exe" )
+        os.system(file_path)
+        #os.system("ontop.exe")  
     
     def autoit_close(self):
         """
         关闭多于页
         """
-        os.system("page_close.exe")
+        dirs = os.getcwd()
+        file_root = os.path.join(dirs,"autoit_exe")
+        file_path = os.path.join(file_root,"page_close.exe" )
+        os.system(file_path)
+        #os.system("page_close.exe")
     
     def autoit_close_all_ie(self):
         """
         关闭所有IE
         """
-        os.system("close_all_ie.exe")
+        dirs = os.getcwd()
+        file_root = os.path.join(dirs,"autoit_exe")
+        file_path = os.path.join(file_root,"close_all_ie.exe" )
+        os.system(file_path)
+        #os.system("close_all_ie.exe")
 
     def close_Express(self):
         os.popen("taskkill /im lava.exe -f")
@@ -868,8 +957,8 @@ if __name__ == "__main__":
     # JX201 = Crawler.get_JX_201()
     # print("The JX201 result is : "+ str(JX201))
 
-    A205 = Crawler.get_A205()
-    print("The A205 result is :" + str(A205))
+    # A205 = Crawler.get_A205()
+    # print("The A205 result is :" + str(A205))
 
     # Q102_STORE =Crawler.get_Q102_store()
     # print("The Q102 store result is :" +str(Q102_STORE))
@@ -881,8 +970,8 @@ if __name__ == "__main__":
     # Q102_CENTER =Crawler.get_Q102_center()
     # print("The Q102 center result is :" +str(Q102_CENTER))
 
-    # Q102_CCLIENT =Crawler.get_Q102_cclient()
-    # print("The Q102 C client result is :" +str(Q102_CCLIENT))
+    Q102_CCLIENT =Crawler.get_Q102_cclient()
+    print("The Q102 C client result is :" +str(Q102_CCLIENT))
 
     # Allot_DATA = Crawler.get_AllotData()
     # print("The result of Allot_DATA is : " + str(Allot_DATA))

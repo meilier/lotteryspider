@@ -18,8 +18,8 @@ class Crawler(object):
             "Q102_STORE":False,
             "Q102_SR": False,
             "Q102_CENTER": False,
-            "Q102_CCLIENT": False,
-            "AllotData": False
+            "Q102_CCLIENT": False
+            # "AllotData": False
             }
         pass
     
@@ -149,6 +149,7 @@ class Crawler(object):
         #是否为工作时间
         hour_time = ["06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22"]
         work_hour = self.get_current_time()
+        print(work_hour)
         work_time = False
 
         if work_hour in hour_time:

@@ -11,7 +11,7 @@ qtst = Q102StoreTable()
 qtsr = Q102SrTable()
 qtce = Q102CenterTable()
 qtcc = Q102CclientTable()
-adt = AllotDataTable()
+#adt = AllotDataTable()
 
 ld.add_table(jxt)
 ld.add_table(bt)
@@ -20,7 +20,7 @@ ld.add_table(qtst)
 ld.add_table(qtsr)
 ld.add_table(qtce)
 ld.add_table(qtcc)
-ld.add_table(adt)
+#ld.add_table(adt)
 
 
 #call sipder
