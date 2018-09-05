@@ -1,6 +1,6 @@
 import os
 import re
-
+import datetime
 
 
 wd = os.getcwd()
@@ -202,3 +202,17 @@ def change_file_name(file_name):
 	if file_name == "Q102_CCLIENT":
 		change_Q102_cclient_name()
 
+def get_yesterday_value():
+    today=datetime.date.today()
+    oneday=datetime.timedelta(days=1)
+    yesterday=today-oneday
+    return yesterday.strftime('%Y%m%d')
+
+def get_yesterday():
+        """
+        得到前一天的信息
+        """
+        today=datetime.date.today() 
+        oneday=datetime.timedelta(days=1) 
+        yesterday=today-oneday  
+        return yesterday.strftime('%Y-%m-%d')
