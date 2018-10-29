@@ -1,0 +1,18 @@
+crawler : 爬虫程序
+dbwriter: 写数据库程序
+csv : 爬取的文件
+sql : 数据库建表语句
+control.cfg ： 记录最后一次爬取数据的时间
+flag.cfg : 记录最后一次写数据库的时间
+
+
+crawler 文件夹
+
+crawler.py
+	ie.py  ： 爬取数据
+	crawler_util.py  ： 文件检查、重命名
+
+	
+	
+ie.py
+

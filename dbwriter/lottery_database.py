@@ -2,7 +2,7 @@
 import cx_Oracle
 import os
 import time
-from table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable
+from table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable, BigCustomerTable, DaiBiaoXinXiTable, MenDianXinXiTable
 
 class LotteryDatabase:
 
@@ -15,7 +15,8 @@ class LotteryDatabase:
 
 	#init object
 	def init(self):
-		self.__conn = cx_Oracle.connect('sports_lottery_data/demo123@172.19.112.11/orcl')
+		# self.__conn = cx_Oracle.connect('sports_lottery_data/demo123@172.19.112.11/orcl')
+		self.__conn = cx_Oracle.connect('test/sist123@172.19.112.11/orcl')
 		self.__cursor = self.__conn.cursor()
 
 	#add table to database class
@@ -58,7 +59,10 @@ if __name__ == "__main__":
 	#qtsr = Q102SrTable()
 	#qtce = Q102CenterTable()
 	#qtcc = Q102CclientTable()
-	adt = AllotDataTable()
+	#adt = AllotDataTable()
+	bct = BigCustomerTable()
+	#dbxx = DaiBiaoXinXiTable()
+	#mdxx = MenDianXinXiTable()
 
 	#ld.add_table(jxt)
 	#ld.add_table(bt)
@@ -67,5 +71,5 @@ if __name__ == "__main__":
 	#ld.add_table(qtsr)
 	#ld.add_table(qtce)
 	#ld.add_table(qtcc)
-	ld.add_table(adt)
+	ld.add_table(bct)
 	ld.insert_data()

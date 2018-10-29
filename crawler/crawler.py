@@ -14,12 +14,15 @@ class Crawler(object):
         self.work_list = {
             "B402": False,
             "JX201": False,
-            "A205":False,
-            "Q102_STORE":False,
-            "Q102_SR": False,
-            "Q102_CENTER": False,
-            "Q102_CCLIENT": False,
-            "AllotData": False
+            "A205": False,
+            # "Q102_STORE": False,
+            # "Q102_SR": False,
+            # "Q102_CENTER": False,
+            # "Q102_CCLIENT": False,
+            "AllotData": False,
+            # -"BigCustomerData": False,
+            # "DaiBiaoXinXiData": False,
+            "MenDianXinXiData": False
             }
         pass
     
@@ -27,8 +30,8 @@ class Crawler(object):
         while True:
 
             try:
-
-                start_work = self.check_work() # 是否开始工作
+                start_work = self.check_work()
+                # 是否开始工作
             except Exception as e:
                 traceback.print_exc()
                 time.sleep(20)
@@ -113,6 +116,12 @@ class Crawler(object):
                     crawler_result=Crawler.get_Q102_cclient()
                 if work == "AllotData":
                     crawler_result=Crawler.get_AllotData()
+                if work == "BigCustomerData":
+                    crawler_result=Crawler.get_BigCustomerData()
+                if work == "DaiBiaoXinXiData":
+                    crawler_result=Crawler.get_DaiBiaoXinXiData()
+                if work == "MenDianXinXiData":
+                    crawler_result=Crawler.get_MenDianXinXiData()
                 self.work_list[work] = crawler_result #修改work_list 状态
                 print(self.work_list)
 

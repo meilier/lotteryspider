@@ -1,6 +1,8 @@
 import os
 import re
 import datetime
+import pandas
+import time
 
 
 wd = os.getcwd()
@@ -91,6 +93,16 @@ def check_Q102_cclient_file():
 				return True
 	return False
 
+def check_DaiBiaoXinXi_file():
+    for files in os.listdir(wdcsv):
+        if re.match('DaiBiaoXinXi',files,flags=0):
+            return True
+    return False
+def check_MenDianXinXi_file():
+    for files in os.listdir(wdcsv):
+        if re.match('MenDianXinXi',files,flags=0):
+            return True
+    return False
 
 
 def change_A205_name():
@@ -164,6 +176,20 @@ def change_Q102_cclient_name():
 	Q102_store_old_name = os.path.join(root,Q102_name)
 	Q102_store_new_name = os.path.join(root,"Q102_CCLIENT.csv")
 	os.rename(Q102_store_old_name,Q102_store_new_name)
+def change_DaiBiaoXinXi_name():
+    wdcsv1 = wdcsv.replace("\\","/")
+    DaiBiaoXinXi_excel = pandas.read_excel(wdcsv1+'DaiBiaoXinXi.xlsx','Sheet0',index_col=0)
+    DaiBiaoXinXi_excel.to_csv(wdcsv1+'DaiBiaoXinXi.csv',encoding='utf_8_sig')
+    time.sleep(10)
+    os.remove(wdcsv1+'DaiBiaoXinXi.xlsx')
+    print("DaiBiaoXinXi.xlsx has bean changed DaiBiaoXinXi.csv")
+def change_MenDianXinXi_name():
+    wdcsv1 = wdcsv.replace("\\","/")
+    MenDianXinXi_excel = pandas.read_excel(wdcsv1+'MenDianXinXi.xlsx','Sheet0',index_col=0)
+    MenDianXinXi_excel.to_csv(wdcsv1+'MenDianXinXi.csv',encoding='utf_8_sig')
+    time.sleep(10)
+    os.remove(wdcsv1+'MenDianXinXi.xlsx')
+    print("MenDianXinXi.xlsx has bean changed MenDianXinXi.csv")
 
 
 def check_file(file_name):
@@ -182,7 +208,10 @@ def check_file(file_name):
 		result = check_Q102_center_file()
 	if file_name == "Q102_CCLIENT":
 		result = check_Q102_cclient_file()
-		
+	if file_name == "DaiBiaoXinXi":
+		result = check_DaiBiaoXinXi_file()
+	if file_name == "MenDianXinXi":
+		result = check_MenDianXinXi_file()        
 	return result
 
 
@@ -201,7 +230,11 @@ def change_file_name(file_name):
 		change_Q102_center_name()
 	if file_name == "Q102_CCLIENT":
 		change_Q102_cclient_name()
-
+	if file_name == "DaiBiaoXinXi":
+		change_DaiBiaoXinXi_name()
+	if file_name == "MenDianXinXi":
+		change_MenDianXinXi_name()
+        
 def get_yesterday_value():
     today=datetime.date.today()
     oneday=datetime.timedelta(days=1)
@@ -216,3 +249,6 @@ def get_yesterday():
         oneday=datetime.timedelta(days=1) 
         yesterday=today-oneday  
         return yesterday.strftime('%Y-%m-%d')
+        
+if __name__ == "__main__":
+    change_DaiBiaoXinXi_name()

@@ -1,5 +1,5 @@
 from lottery_database import LotteryDatabase
-from table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable
+from table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable, BigCustomerTable, DaiBiaoXinXiTable, MenDianXinXiTable
 import lottery_util
 import time, datetime,os
 
@@ -12,15 +12,21 @@ qtsr = Q102SrTable()
 qtce = Q102CenterTable()
 qtcc = Q102CclientTable()
 adt = AllotDataTable()
+bct = BigCustomerTable()
+dbxx = DaiBiaoXinXiTable()
+mdxx = MenDianXinXiTable()
 
 ld.add_table(jxt)
 ld.add_table(bt)
 ld.add_table(at)
-ld.add_table(qtst)
-ld.add_table(qtsr)
-ld.add_table(qtce)
-ld.add_table(qtcc)
-ld.add_table(adt)
+# ld.add_table(qtst)
+# ld.add_table(qtsr)
+# ld.add_table(qtce)
+# ld.add_table(qtcc)
+# ld.add_table(adt)
+# ld.add_table(bct)
+# ld.add_table(dbxx)
+ld.add_table(mdxx)
 
 
 #call sipder
@@ -85,6 +91,7 @@ while True:
 
 	print("Controle date : " + str(current_control_date))
 	print("The yesterday is :" + str(the_yesterday))
+	print("当前时间为："+str(datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S")))
 	
 	if (not flag_date == current_control_date) and (current_control_date ==  the_yesterday):
 		start_dbwriter(current_control_date)
