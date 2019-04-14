@@ -1,5 +1,5 @@
 from lottery_database import LotteryDatabase
-from table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable, BigCustomerTable, DaiBiaoXinXiTable, MenDianXinXiTable
+from dbwriter.table import JX201Table, B402Table, A205Table, Q102StoreTable, Q102SrTable, Q102CenterTable, Q102CclientTable, AllotDataTable, BigCustomerTable, DaiBiaoXinXiTable, MenDianXinXiTable
 import lottery_util
 import time, datetime,os
 
