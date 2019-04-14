@@ -44,7 +44,7 @@ class MyTable(Table):
 ```python3 
 from table.py import MyTable
 
-\#mt means mytable and ld means lottery_database
+#mt means mytable and ld means lottery_database
 
 mt = MyTable()
 ld.addTable(mt)
