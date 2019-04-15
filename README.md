@@ -2,7 +2,7 @@
 
 This is a spider project for getting data automatically from lottery website and sending it to database.
 
-## Spdier Part
+## Spider Part
 
 Using selenium as spider
 
